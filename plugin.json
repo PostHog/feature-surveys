@@ -1,0 +1,84 @@
+{
+    "name": "Feature survey",
+    "config": [
+        {
+            "markdown": "## MANUAL STEP NOTICE: This app needs to injects code into your website through posthog-js. You need to **opt-in** on your site to enable this behaviour.\n\n```\nposthog.init(\"api_key\", {\n  \"api_host\": \"https://app.posthog.com\",\n  \"opt_in_site_apps\": true,\n})\n```"
+        },
+        {
+            "key": "domains",
+            "name": "Domains",
+            "hint": "Comma separated list of domains to activate on. Leave blank to enable all. For example: \"localhost,app.posthog.com\"",
+            "type": "string",
+            "default": "",
+            "site": true
+        },
+        {
+            "key": "selector",
+            "name": "Selector",
+            "hint": "CSS selector to activate on. For example: \"#my-feedback-button\" or \"[data-attr='posthog-feedback-button']\"",
+            "type": "string",
+            "default": "",
+            "site": true
+        },
+        {
+            "key": "buttonBackground",
+            "name": "Button background",
+            "type": "string",
+            "default": "",
+            "site": true
+        },
+        {
+            "key": "buttonColor",
+            "name": "Button text color",
+            "type": "string",
+            "default": "",
+            "site": true
+        },
+        {
+            "key": "feedbackQuestion",
+            "name": "Feedback question",
+            "type": "string",
+            "default": "Do you have any feedback?",
+            "site": true
+        },
+        {
+            "key": "placeholderText",
+            "name": "Placeholder text",
+            "type": "string",
+            "default": "Help us improve",
+            "site": true
+        },
+        {
+            "key": "sendButtonText",
+            "name": "Send button text",
+            "type": "string",
+            "default": "Finish",
+            "required": false,
+            "site": true
+        },
+        {
+            "key": "eventName",
+            "name": "Feedback event's event name",
+            "type": "string",
+            "default": "Feedback Sent",
+            "required": true,
+            "site": true
+        },
+        {
+            "key": "feedbackProperty",
+            "name": "Feedback event's feedback property",
+            "type": "string",
+            "default": "$feedback",
+            "required": true,
+            "site": true
+        },
+        {
+            "key": "zIndex",
+            "name": "z-index of the form and the button (default to 999999)",
+            "type": "string",
+            "default": 999999,
+            "required": true,
+            "site": true
+        }
+    ]
+}
