@@ -235,9 +235,16 @@ export function inject({ config, posthog }) {
         })
         shadow.appendChild(thanksElement)
     }
+    const matchesUrlOrSelector = window.location.href === config.url || document.getElementById(config.selector)
 
-    if (window.location.href === config.url || document.getElementById(config.selector)) {
-        if (!localStorage.getItem(`seenSurvey-${config.key}`)) {
+    if (matchesUrlOrSelector && !localStorage.getItem(`seenSurvey-${config.key}`)) {
+        if (config.featureFlag) {
+            posthog.onFeatureFlags(() => {
+                if (posthog.isFeatureEnabled(config.featureFlag)) {
+                    createForm(shadow)
+                }
+            })
+        } else {
             createForm(shadow)
         }
     }

@@ -22,6 +22,14 @@
             "site": true
         },
         {
+            "key": "featureFlag",
+            "name": "Feature flag",
+            "hint": "Optional feature flag to connect this survey to. The survey will only show up for enabled users of the flag.",
+            "type": "string",
+            "default": "",
+            "site": true
+        },
+        {
             "key": "url",
             "name": "Url",
             "hint": "Url to activate on. For example app.posthog.com/early-access-features",
