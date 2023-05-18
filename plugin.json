@@ -13,6 +13,23 @@
             "site": true
         },
         {
+            "key": "key",
+            "name": "Key",
+            "hint": "Unique identifier for your survey",
+            "type": "string",
+            "default": "",
+            "required": true,
+            "site": true
+        },
+        {
+            "key": "url",
+            "name": "Url",
+            "hint": "Url to activate on. For example app.posthog.com/early-access-features",
+            "type": "string",
+            "default": "",
+            "site": true
+        },
+        {
             "key": "selector",
             "name": "Selector",
             "hint": "CSS selector to activate on. For example: \"#my-feedback-button\" or \"[data-attr='posthog-feedback-button']\"",

@@ -171,64 +171,76 @@ export function inject({ config, posthog }) {
         return sessionId ? `${api_host}/recordings/${sessionId}?t=${recordingStartTime}` : undefined
     }
 
-    const formElement = Object.assign(document.createElement('form'), {
-        className: 'form',
-        innerHTML: form,
-        onsubmit: function (e) {
+
+    const createForm = (shadow) => {
+        const formElement = Object.assign(document.createElement('form'), {
+            className: 'form',
+            innerHTML: form,
+            onsubmit: function (e) {
+                e.preventDefault()
+                const sessionRecordingUrl = getSessionRecordingUrl()
+                posthog.capture(config.eventName || 'Feedback Sent', {
+
+                    [config.feedbackProperty || '$feedback']: this.feedback.value,
+                    sessionRecordingUrl: sessionRecordingUrl,
+                })
+                Object.assign(formElement.style, { display: 'none' })
+                Object.assign(thanksElement.style, { display: 'flex' })
+                localStorage.setItem(`seenSurvey-${config.key}`, "true")
+                window.setTimeout(() => {
+                    Object.assign(thanksElement.style, { display: 'none' })
+                    window.dispatchEvent(new Event('PHFeedbackBoxClosed'))
+                }, 2000)
+                formElement.reset()
+            },
+        })
+        const textarea = formElement.getElementsByClassName('feedback-textarea')[0] as HTMLTextAreaElement
+        const cancelButton = formElement.getElementsByClassName('form-cancel')[0] as HTMLButtonElement
+        const submitButton = formElement.getElementsByClassName('form-submit')[0] as HTMLButtonElement
+        const footerArea = formElement.getElementsByClassName('footer-branding')[0] as HTMLElement
+        const feedbackQuestion = formElement.getElementsByClassName('feedback-question')[0] as HTMLElement
+    
+        Object.assign(submitButton.style, {
+            color: config.buttonColor || "#E5E7E0",
+            background: config.buttonBackground || "#2C2C2C",
+        })
+    
+        cancelButton.addEventListener('click', (e) => {
             e.preventDefault()
-            const sessionRecordingUrl = getSessionRecordingUrl()
-            posthog.capture(config.eventName || 'Feedback Sent', {
-                [config.feedbackProperty || '$feedback']: this.feedback.value,
-                sessionRecordingUrl: sessionRecordingUrl,
-            })
             Object.assign(formElement.style, { display: 'none' })
-            Object.assign(thanksElement.style, { display: 'flex' })
-            window.setTimeout(() => {
-                Object.assign(thanksElement.style, { display: 'none' })
-                window.dispatchEvent(new Event('PHFeedbackBoxClosed'))
-            }, 2000)
-            formElement.reset()
-        },
-    })
-    const textarea = formElement.getElementsByClassName('feedback-textarea')[0] as HTMLTextAreaElement
-    const cancelButton = formElement.getElementsByClassName('form-cancel')[0] as HTMLButtonElement
-    const submitButton = formElement.getElementsByClassName('form-submit')[0] as HTMLButtonElement
-    const footerArea = formElement.getElementsByClassName('footer-branding')[0] as HTMLElement
-    const feedbackQuestion = formElement.getElementsByClassName('feedback-question')[0] as HTMLElement
+            localStorage.setItem(`seenSurvey-${config.key}`, "true")
+            window.dispatchEvent(new Event('PHFeedbackBoxClosed'))
+        })
 
-    Object.assign(submitButton.style, {
-        color: config.buttonColor || "#E5E7E0",
-        background: config.buttonBackground || "#2C2C2C",
-    })
+        textarea.addEventListener('input', (e) => {
+            if (textarea.value.length > 0) {
+                submitButton.disabled = false
+            } else {
+                submitButton.disabled = true
+            }
+        })
 
-    cancelButton.addEventListener('click', (e) => {
-        e.preventDefault()
-        Object.assign(formElement.style, { display: 'none' })
-        window.dispatchEvent(new Event('PHFeedbackBoxClosed'))
-    })
+        cancelButton.innerText = config.cancelButtonText || 'X'
+        submitButton.innerText = config.sendButtonText || 'Finish'
+        feedbackQuestion.innerText = config.feedbackQuestion || ''
 
-    textarea.addEventListener('input', (e) => {
-        if (textarea.value.length > 0) {
-            submitButton.disabled = false
-        } else {
-            submitButton.disabled = true
+        footerArea.innerHTML = `<div>powered by ${posthogLogo} PostHog</div>`
+        shadow.appendChild(formElement)
+
+        console.log('Posthog - feedback survey')
+
+        const thanksElement = Object.assign(document.createElement('div'), {
+            className: 'thanks',
+            innerHTML: 'Thank you!',
+        })
+        shadow.appendChild(thanksElement)
+    }
+
+    if (window.location.href === config.url || document.getElementById(config.selector)) {
+        if (!localStorage.getItem(`seenSurvey-${config.key}`)) {
+            createForm(shadow)
         }
-    })
-
-    cancelButton.innerText = config.cancelButtonText || 'X'
-    submitButton.innerText = config.sendButtonText || 'Finish'
-    feedbackQuestion.innerText = config.feedbackQuestion || ''
-
-    footerArea.innerHTML = `<div>powered by ${posthogLogo} PostHog</div>`
-    shadow.appendChild(formElement)
-
-    console.log('Posthog - feedback survey')
-
-    const thanksElement = Object.assign(document.createElement('div'), {
-        className: 'thanks',
-        innerHTML: 'Thank you!',
-    })
-    shadow.appendChild(thanksElement)
+    }
 }
 
 function createShadow(styleSheet: string): ShadowRoot {
