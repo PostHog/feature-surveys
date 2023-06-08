@@ -13,72 +13,10 @@
             "site": true
         },
         {
-            "key": "key",
-            "name": "Key",
-            "hint": "Unique identifier for your survey",
-            "type": "string",
-            "default": "",
-            "required": true,
-            "site": true
-        },
-        {
-            "key": "featureFlag",
-            "name": "Feature flag",
-            "hint": "Optional feature flag to connect this survey to. The survey will only show up for enabled users of the flag.",
-            "type": "string",
-            "default": "",
-            "site": true
-        },
-        {
-            "key": "url",
-            "name": "Url",
-            "hint": "Url to activate on. For example app.posthog.com/early-access-features",
-            "type": "string",
-            "default": "",
-            "site": true
-        },
-        {
-            "key": "selector",
-            "name": "Selector",
-            "hint": "CSS selector to activate on. For example: \"#my-feedback-button\" or \"[data-attr='posthog-feedback-button']\"",
-            "type": "string",
-            "default": "",
-            "site": true
-        },
-        {
-            "key": "buttonBackground",
-            "name": "Button background",
-            "type": "string",
-            "default": "",
-            "site": true
-        },
-        {
-            "key": "buttonColor",
-            "name": "Button text color",
-            "type": "string",
-            "default": "",
-            "site": true
-        },
-        {
-            "key": "feedbackQuestion",
-            "name": "Feedback question",
-            "type": "string",
-            "default": "Do you have any feedback?",
-            "site": true
-        },
-        {
             "key": "placeholderText",
             "name": "Placeholder text",
             "type": "string",
             "default": "Help us improve",
-            "site": true
-        },
-        {
-            "key": "sendButtonText",
-            "name": "Send button text",
-            "type": "string",
-            "default": "Finish",
-            "required": false,
             "site": true
         },
         {

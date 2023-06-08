@@ -1,7 +1,7 @@
 const posthogLogo = '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="12" viewBox="0 0 50 30" fill="none"><path d="M10.8914 17.2057c-.3685.7371-1.42031.7371-1.78884 0L8.2212 15.443c-.14077-.2815-.14077-.6129 0-.8944l.88136-1.7627c.36853-.7371 1.42034-.7371 1.78884 0l.8814 1.7627c.1407.2815.1407.6129 0 .8944l-.8814 1.7627zM10.8914 27.2028c-.3685.737-1.42031.737-1.78884 0L8.2212 25.44c-.14077-.2815-.14077-.6129 0-.8944l.88136-1.7627c.36853-.7371 1.42034-.7371 1.78884 0l.8814 1.7627c.1407.2815.1407.6129 0 .8944l-.8814 1.7628z" fill="##6A6B69"/><path d="M0 23.4082c0-.8909 1.07714-1.3371 1.70711-.7071l4.58338 4.5834c.62997.63.1838 1.7071-.7071 1.7071H.999999c-.552284 0-.999999-.4477-.999999-1v-4.5834zm0-4.8278c0 .2652.105357.5196.292893.7071l9.411217 9.4112c.18753.1875.44189.2929.70709.2929h5.1692c.8909 0 1.3371-1.0771.7071-1.7071L1.70711 12.7041C1.07714 12.0741 0 12.5203 0 13.4112v5.1692zm0-9.99701c0 .26521.105357.51957.292893.7071L19.7011 28.6987c.1875.1875.4419.2929.7071.2929h5.1692c.8909 0 1.3371-1.0771.7071-1.7071L1.70711 2.70711C1.07715 2.07715 0 2.52331 0 3.41421v5.16918zm9.997 0c0 .26521.1054.51957.2929.7071l17.994 17.99401c.63.63 1.7071.1838 1.7071-.7071v-5.1692c0-.2652-.1054-.5196-.2929-.7071l-17.994-17.994c-.63-.62996-1.7071-.18379-1.7071.70711v5.16918zm11.7041-5.87628c-.63-.62997-1.7071-.1838-1.7071.7071v5.16918c0 .26521.1054.51957.2929.7071l7.997 7.99701c.63.63 1.7071.1838 1.7071-.7071v-5.1692c0-.2652-.1054-.5196-.2929-.7071l-7.997-7.99699z" fill="#6A6B69"/><path d="M42.5248 23.5308l-9.4127-9.4127c-.63-.63-1.7071-.1838-1.7071.7071v13.1664c0 .5523.4477 1 1 1h14.5806c.5523 0 1-.4477 1-1v-1.199c0-.5523-.4496-.9934-.9973-1.0647-1.6807-.2188-3.2528-.9864-4.4635-2.1971zm-6.3213 2.2618c-.8829 0-1.5995-.7166-1.5995-1.5996 0-.8829.7166-1.5995 1.5995-1.5995.883 0 1.5996.7166 1.5996 1.5995 0 .883-.7166 1.5996-1.5996 1.5996z" fill="#6A6B69"/><path d="M0 27.9916c0 .5523.447715 1 1 1h4.58339c.8909 0 1.33707-1.0771.70711-1.7071l-4.58339-4.5834C1.07714 22.0711 0 22.5173 0 23.4082v4.5834zM9.997 10.997L1.70711 2.70711C1.07714 2.07714 0 2.52331 0 3.41421v5.16918c0 .26521.105357.51957.292893.7071L9.997 18.9946V10.997zM1.70711 12.7041C1.07714 12.0741 0 12.5203 0 13.4112v5.1692c0 .2652.105357.5196.292893.7071L9.997 28.9916V20.994l-8.28989-8.2899z" fill="#6A6B69"/><path d="M19.994 11.4112c0-.2652-.1053-.5196-.2929-.7071l-7.997-7.99699c-.6299-.62997-1.70709-.1838-1.70709.7071v5.16918c0 .26521.10539.51957.29289.7071l9.7041 9.70411v-7.5834zM9.99701 28.9916h5.58339c.8909 0 1.3371-1.0771.7071-1.7071L9.99701 20.994v7.9976zM9.99701 10.997v7.5834c0 .2652.10539.5196.29289.7071l9.7041 9.7041v-7.5834c0-.2652-.1053-.5196-.2929-.7071L9.99701 10.997z" fill="#6a6b69"/></svg>'
 
-const style = (config) => `
-    .form, .thanks {
+const style = (name, appearance) => `
+    .${name}-form, .thanks {
         position: fixed;
         bottom: 3vh;
         right: 20px;
@@ -9,7 +9,7 @@ const style = (config) => `
         font-weight: normal;
         font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", "Roboto", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
         text-align: left;
-        z-index: ${parseInt(config.zIndex) || 99999};
+        z-index: ${parseInt(appearance?.zIndex) || 99999};
     }
     .button {
         width: 64px;
@@ -32,7 +32,7 @@ const style = (config) => `
     .thanks {
         background: white;
     }
-    .form {
+    .${name}-form {
         flex-direction: column;
         background: white;
         border: 1px solid #f0f0f0;
@@ -41,7 +41,7 @@ const style = (config) => `
         max-width: 380px;
         box-shadow: -6px 0 16px -8px rgb(0 0 0 / 8%), -9px 0 28px 0 rgb(0 0 0 / 5%), -12px 0 48px 16px rgb(0 0 0 / 3%);
     }
-    .form textarea {
+    .${name}-form textarea {
         color: #2d2d2d;
         font-size: 14px;
         font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", "Roboto", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
@@ -114,12 +114,12 @@ const style = (config) => `
         padding-top: .5rem;
         text-align: center;
     }
-    .feedback-box {
+    .${name}-box {
         padding: .5rem 1rem;
         display: flex;
         flex-direction: column;
     }
-    .feedback-question {
+    .survey-question {
         padding-top: 4px;
         padding-bottom: 4px;
         text-align: center;
@@ -139,25 +139,6 @@ export function inject({ config, posthog }) {
             return
         }
     }
-    const shadow = createShadow(style(config))
-
-    const form = `
-        <div class="feedback-box">
-            <div class="cancel-btn-wrapper">
-            <button class="form-cancel" type="cancel">X</button>
-            </div>
-            <div class="question-textarea-wrapper">
-            <div class="feedback-question"></div>
-            <textarea class="feedback-textarea" name="feedback" rows=4></textarea>
-            </div>
-            <div class="bottom-section">
-                <div class="buttons">
-                    <button class="form-submit" type="submit" disabled>Submit</button>
-                </div>
-                <div class="footer-branding"></div>
-            </div>
-        </div>
-    `
 
     const getSessionRecordingUrl = () => {
         const sessionId = posthog?.sessionRecording?.sessionId
@@ -171,45 +152,95 @@ export function inject({ config, posthog }) {
         return sessionId ? `${api_host}/recordings/${sessionId}?t=${recordingStartTime}` : undefined
     }
 
+    const createShadow = (styleSheet: string) => {
+        const div = document.createElement('div')
+        const shadow = div.attachShadow({ mode: 'open' })
+        if (styleSheet) {
+            const styleElement = Object.assign(document.createElement('style'), {
+                innerText: styleSheet,
+            })
+            shadow.appendChild(styleElement)
+        }
+        document.body.appendChild(div)
+        return shadow
+    }
 
-    const createForm = (shadow) => {
+    const createSurveyPopup = (survey, surveyName) => {
+        const form = `
+        <div class="${surveyName}-box">
+            <div class="cancel-btn-wrapper">
+            <button class="form-cancel" type="cancel">X</button>
+            </div>
+            <div class="question-textarea-wrapper">
+            <div class="survey-question"></div>
+            <textarea class="survey-textarea" name="survey" rows=4></textarea>
+            </div>
+            <div class="bottom-section">
+                <div class="buttons">
+                    <button class="form-submit" type="submit" disabled>Submit</button>
+                </div>
+                <div class="footer-branding"></div>
+            </div>
+        </div>
+    `
+
         const formElement = Object.assign(document.createElement('form'), {
-            className: 'form',
+            className: `${surveyName}-form`,
             innerHTML: form,
             onsubmit: function (e) {
                 e.preventDefault()
                 const sessionRecordingUrl = getSessionRecordingUrl()
-                posthog.capture(config.eventName || 'Feedback Sent', {
-
-                    [config.feedbackProperty || '$feedback']: this.feedback.value,
+                posthog.capture(`${survey.name} survey sent`, {
+                    $survey_name: survey.name,
+                    $survey_question: survey.question,
+                    $survey_answer: e.target.survey.value,
                     sessionRecordingUrl: sessionRecordingUrl,
                 })
-                Object.assign(formElement.style, { display: 'none' })
-                Object.assign(thanksElement.style, { display: 'flex' })
-                localStorage.setItem(`seenSurvey-${config.key}`, "true")
-                window.setTimeout(() => {
-                    Object.assign(thanksElement.style, { display: 'none' })
-                    window.dispatchEvent(new Event('PHFeedbackBoxClosed'))
-                }, 2000)
-                formElement.reset()
-            },
+                closeSurveyPopup(surveyName, formElement)
+            }
         })
-        const textarea = formElement.getElementsByClassName('feedback-textarea')[0] as HTMLTextAreaElement
+        adjustSurveyAppearance(survey, formElement)
+
+        return formElement
+    }
+
+    const closeSurveyPopup = (surveyName: any, surveyPopup: any) => {
+        Object.assign(surveyPopup.style, { display: 'none' })
+        localStorage.setItem(`seenSurvey-${surveyName}`, "true")
+        window.setTimeout(() => {
+            window.dispatchEvent(new Event('PHSurveyClosed'))
+        }, 2000)
+        surveyPopup.reset()
+    }
+
+    const adjustSurveyAppearance = (survey, formElement) => {
         const cancelButton = formElement.getElementsByClassName('form-cancel')[0] as HTMLButtonElement
         const submitButton = formElement.getElementsByClassName('form-submit')[0] as HTMLButtonElement
         const footerArea = formElement.getElementsByClassName('footer-branding')[0] as HTMLElement
-        const feedbackQuestion = formElement.getElementsByClassName('feedback-question')[0] as HTMLElement
+        const surveyQuestion = formElement.getElementsByClassName('survey-question')[0] as HTMLElement
     
         Object.assign(submitButton.style, {
-            color: config.buttonColor || "#E5E7E0",
-            background: config.buttonBackground || "#2C2C2C",
+            color: survey.appearance?.buttonColor || "#E5E7E0",
+            background: survey.appearance?.buttonBackground || "#2C2C2C",
         })
-    
+
+        cancelButton.innerText = survey.appearance?.cancelButtonText || 'X'
+        submitButton.innerText = survey.appearance?.sendButtonText || 'Finish'
+        surveyQuestion.innerText = survey.questions[0].question || ''
+
+        footerArea.innerHTML = `<div>powered by ${posthogLogo} PostHog</div>`
+    }
+
+    const addListeners = (surveyPopup, surveyName) => {
+        const cancelButton = surveyPopup.getElementsByClassName('form-cancel')[0] as HTMLButtonElement
+        const textarea = surveyPopup.getElementsByClassName('survey-textarea')[0] as HTMLTextAreaElement
+        const submitButton = surveyPopup.getElementsByClassName('form-submit')[0] as HTMLButtonElement
+
         cancelButton.addEventListener('click', (e) => {
             e.preventDefault()
-            Object.assign(formElement.style, { display: 'none' })
-            localStorage.setItem(`seenSurvey-${config.key}`, "true")
-            window.dispatchEvent(new Event('PHFeedbackBoxClosed'))
+            Object.assign(surveyPopup.style, { display: 'none' })
+            localStorage.setItem(`seenSurvey-${surveyName}`, "true")
+            window.dispatchEvent(new Event('PHSurveyClosed'))
         })
 
         textarea.addEventListener('input', (e) => {
@@ -219,46 +250,20 @@ export function inject({ config, posthog }) {
                 submitButton.disabled = true
             }
         })
+    }
 
-        cancelButton.innerText = config.cancelButtonText || 'X'
-        submitButton.innerText = config.sendButtonText || 'Finish'
-        feedbackQuestion.innerText = config.feedbackQuestion || ''
+    posthog.getActiveMatchingSurveys((surveys) => {
+        surveys.forEach((survey) => {
+            const surveyName = survey.name.replace(/\s/g , "-")
+            if (!localStorage.getItem(`seenSurvey-${surveyName}`)) {
+                const shadow = createShadow(style(surveyName, survey.appearance))
+                const surveyPopup = createSurveyPopup(survey, surveyName)
+                addListeners(surveyPopup, surveyName)
+                shadow.appendChild(surveyPopup)
+                window.dispatchEvent(new Event('PHSurveyShown'))
 
-        footerArea.innerHTML = `<div>powered by ${posthogLogo} PostHog</div>`
-        shadow.appendChild(formElement)
-
-        console.log('Posthog - feedback survey')
-
-        const thanksElement = Object.assign(document.createElement('div'), {
-            className: 'thanks',
-            innerHTML: 'Thank you!',
+            }
         })
-        shadow.appendChild(thanksElement)
-    }
-    const matchesUrlOrSelector = window.location.href === config.url || document.getElementById(config.selector)
-
-    if (matchesUrlOrSelector && !localStorage.getItem(`seenSurvey-${config.key}`)) {
-        if (config.featureFlag) {
-            posthog.onFeatureFlags(() => {
-                if (posthog.isFeatureEnabled(config.featureFlag)) {
-                    createForm(shadow)
-                }
-            })
-        } else {
-            createForm(shadow)
-        }
-    }
-}
-
-function createShadow(styleSheet: string): ShadowRoot {
-    const div = document.createElement('div')
-    const shadow = div.attachShadow({ mode: 'open' })
-    if (styleSheet) {
-        const styleElement = Object.assign(document.createElement('style'), {
-            innerText: styleSheet,
-        })
-        shadow.appendChild(styleElement)
-    }
-    document.body.appendChild(div)
-    return shadow
+        console.log('Posthog - surveys')
+    }, true)
 }
