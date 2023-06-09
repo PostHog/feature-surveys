@@ -196,7 +196,7 @@ export function inject({ config, posthog }) {
                     $survey_answer: e.target.survey.value,
                     sessionRecordingUrl: sessionRecordingUrl,
                 })
-                closeSurveyPopup(surveyName, formElement)
+                closeSurveyPopup(surveyName, survey.id, formElement)
             }
         })
         adjustSurveyAppearance(survey, formElement)
@@ -204,9 +204,9 @@ export function inject({ config, posthog }) {
         return formElement
     }
 
-    const closeSurveyPopup = (surveyName: any, surveyPopup: any) => {
+    const closeSurveyPopup = (surveyName: string, surveyId: string, surveyPopup: HTMLFormElement) => {
         Object.assign(surveyPopup.style, { display: 'none' })
-        localStorage.setItem(`seenSurvey-${surveyName}`, "true")
+        localStorage.setItem(`seenSurvey_${surveyName}_${surveyId}`, "true")
         window.setTimeout(() => {
             window.dispatchEvent(new Event('PHSurveyClosed'))
         }, 2000)
@@ -231,7 +231,7 @@ export function inject({ config, posthog }) {
         footerArea.innerHTML = `<div>powered by ${posthogLogo} PostHog</div>`
     }
 
-    const addListeners = (surveyPopup, surveyName) => {
+    const addListeners = (surveyPopup, surveyName, surveyId) => {
         const cancelButton = surveyPopup.getElementsByClassName('form-cancel')[0] as HTMLButtonElement
         const textarea = surveyPopup.getElementsByClassName('survey-textarea')[0] as HTMLTextAreaElement
         const submitButton = surveyPopup.getElementsByClassName('form-submit')[0] as HTMLButtonElement
@@ -239,7 +239,7 @@ export function inject({ config, posthog }) {
         cancelButton.addEventListener('click', (e) => {
             e.preventDefault()
             Object.assign(surveyPopup.style, { display: 'none' })
-            localStorage.setItem(`seenSurvey-${surveyName}`, "true")
+            localStorage.setItem(`seenSurvey_${surveyName}_${surveyId}`, "true")
             window.dispatchEvent(new Event('PHSurveyClosed'))
         })
 
@@ -255,10 +255,10 @@ export function inject({ config, posthog }) {
     posthog.getActiveMatchingSurveys((surveys) => {
         surveys.forEach((survey) => {
             const surveyName = survey.name.replace(/\s/g , "-")
-            if (!localStorage.getItem(`seenSurvey-${surveyName}`)) {
+            if (!localStorage.getItem(`seenSurvey_${surveyName}_${survey.id}`)) {
                 const shadow = createShadow(style(surveyName, survey.appearance))
                 const surveyPopup = createSurveyPopup(survey, surveyName)
-                addListeners(surveyPopup, surveyName)
+                addListeners(surveyPopup, surveyName, survey.id)
                 shadow.appendChild(surveyPopup)
                 window.dispatchEvent(new Event('PHSurveyShown'))
 
