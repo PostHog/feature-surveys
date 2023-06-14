@@ -34,11 +34,10 @@ const style = (name, appearance) => `
     }
     .${name}-form {
         flex-direction: column;
-        background: white;
+        background: ${appearance?.backgroundColor || 'white'};
         border: 1px solid #f0f0f0;
         border-radius: 8px;
         padding-top: 5px;
-        max-width: 380px;
         box-shadow: -6px 0 16px -8px rgb(0 0 0 / 8%), -9px 0 28px 0 rgb(0 0 0 / 5%), -12px 0 48px 16px rgb(0 0 0 / 3%);
     }
     .${name}-form textarea {
@@ -76,7 +75,7 @@ const style = (name, appearance) => `
         font-size: 14px;
         border-radius: 4px;
         outline: 0;
-        background: #2C2C2C;
+        background: ${appearance?.submitButtonColor || '#2C2C2C'} !important;
         color: #E5E7E0;
         text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.12);
         box-shadow: 0 2px 0 rgba(0, 0, 0, 0.045);
@@ -87,7 +86,7 @@ const style = (name, appearance) => `
     .form-cancel {
         float: right;
         border: none;
-        background: white;
+        background: ${appearance?.backgroundColor || 'white'};
         cursor: pointer;
     }
     .thanks {
@@ -123,11 +122,12 @@ const style = (name, appearance) => `
         padding-top: 4px;
         padding-bottom: 4px;
         text-align: center;
+        color: ${appearance?.textColor || 'black'};
     }
     .question-textarea-wrapper {
         display: flex;
         flex-direction: column;
-        max-width: 300px;
+        max-width: ${parseInt(appearance?.maxWidth) || 300};
         padding-bottom: 4px;
     }
 `
@@ -252,7 +252,7 @@ export function inject({ config, posthog }) {
         })
     }
 
-    posthog.getActiveMatchingSurveys((surveys) => {
+    posthog?.getActiveMatchingSurveys((surveys) => {
         surveys.forEach((survey) => {
             const surveyName = survey.name.replace(/\s/g , "-")
             if (!localStorage.getItem(`seenSurvey_${surveyName}_${survey.id}`)) {
