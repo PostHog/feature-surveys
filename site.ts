@@ -192,6 +192,7 @@ export function inject({ config, posthog }) {
                 const sessionRecordingUrl = getSessionRecordingUrl()
                 posthog.capture(`${survey.name} survey sent`, {
                     $survey_name: survey.name,
+                    $survey_id: survey.id,
                     $survey_question: survey.question,
                     $survey_answer: e.target.survey.value,
                     sessionRecordingUrl: sessionRecordingUrl,
@@ -231,7 +232,7 @@ export function inject({ config, posthog }) {
         footerArea.innerHTML = `<div>powered by ${posthogLogo} PostHog</div>`
     }
 
-    const addListeners = (surveyPopup, surveyName, surveyId) => {
+    const addListeners = (surveyPopup, surveyName, surveyId, surveyEventName) => {
         const cancelButton = surveyPopup.getElementsByClassName('form-cancel')[0] as HTMLButtonElement
         const textarea = surveyPopup.getElementsByClassName('survey-textarea')[0] as HTMLTextAreaElement
         const submitButton = surveyPopup.getElementsByClassName('form-submit')[0] as HTMLButtonElement
@@ -240,6 +241,12 @@ export function inject({ config, posthog }) {
             e.preventDefault()
             Object.assign(surveyPopup.style, { display: 'none' })
             localStorage.setItem(`seenSurvey_${surveyName}_${surveyId}`, "true")
+            const sessionRecordingUrl = getSessionRecordingUrl()
+            posthog.capture(`${surveyEventName} survey dismissed`, {
+                $survey_name: surveyEventName,
+                $survey_id: surveyId,
+                sessionRecordingUrl: sessionRecordingUrl,
+            })
             window.dispatchEvent(new Event('PHSurveyClosed'))
         })
 
@@ -256,14 +263,18 @@ export function inject({ config, posthog }) {
         surveys.forEach((survey) => {
             const surveyName = survey.name.replace(/\s/g , "-")
             if (!localStorage.getItem(`seenSurvey_${surveyName}_${survey.id}`)) {
-                const shadow = createShadow(style(surveyName, survey.appearance))
+                const shadow = createShadow(style(surveyName, survey?.appearance))
                 const surveyPopup = createSurveyPopup(survey, surveyName)
-                addListeners(surveyPopup, surveyName, survey.id)
+                addListeners(surveyPopup, surveyName, survey.id, survey.name)
                 shadow.appendChild(surveyPopup)
                 window.dispatchEvent(new Event('PHSurveyShown'))
-
+                const sessionRecordingUrl = getSessionRecordingUrl()
+                posthog.capture(`${survey.name} survey shown`, {
+                    $survey_name: survey.name,
+                    $survey_id: survey.id,
+                    sessionRecordingUrl: sessionRecordingUrl,
+                })
             }
         })
-        console.log('Posthog - surveys')
     }, true)
 }
