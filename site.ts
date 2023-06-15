@@ -194,7 +194,7 @@ export function inject({ config, posthog }) {
                     $survey_name: survey.name,
                     $survey_id: survey.id,
                     $survey_question: survey.question,
-                    $survey_answer: e.target.survey.value,
+                    $survey_response: e.target.survey.value,
                     sessionRecordingUrl: sessionRecordingUrl,
                 })
                 closeSurveyPopup(surveyName, survey.id, formElement)
