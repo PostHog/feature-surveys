@@ -242,7 +242,7 @@ export function inject({ config, posthog }) {
             Object.assign(surveyPopup.style, { display: 'none' })
             localStorage.setItem(`seenSurvey_${surveyName}_${surveyId}`, "true")
             const sessionRecordingUrl = getSessionRecordingUrl()
-            posthog.capture(`${surveyEventName} survey dismissed`, {
+            posthog.capture('survey dismissed', {
                 $survey_name: surveyEventName,
                 $survey_id: surveyId,
                 sessionRecordingUrl: sessionRecordingUrl,
@@ -269,7 +269,7 @@ export function inject({ config, posthog }) {
                 shadow.appendChild(surveyPopup)
                 window.dispatchEvent(new Event('PHSurveyShown'))
                 const sessionRecordingUrl = getSessionRecordingUrl()
-                posthog.capture(`${survey.name} survey shown`, {
+                posthog.capture('survey shown', {
                     $survey_name: survey.name,
                     $survey_id: survey.id,
                     sessionRecordingUrl: sessionRecordingUrl,
