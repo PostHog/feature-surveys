@@ -11,19 +11,6 @@ const style = (name, appearance) => `
         text-align: left;
         z-index: ${parseInt(appearance?.zIndex) || 99999};
     }
-    .button {
-        width: 64px;
-        height: 64px;
-        border-radius: 100%;
-        text-align: center;
-        line-height: 60px;
-        font-size: 32px;
-        border: none;
-        cursor: pointer;
-    }
-    .button:hover {
-        filter: brightness(1.2);
-    }
     .form-submit[disabled] {
         opacity: 0.6;
         filter: grayscale(100%);
@@ -127,7 +114,7 @@ const style = (name, appearance) => `
     .question-textarea-wrapper {
         display: flex;
         flex-direction: column;
-        max-width: ${parseInt(appearance?.maxWidth) || 300};
+        max-width: ${parseInt(appearance?.maxWidth) || 300}px;
         padding-bottom: 4px;
     }
 `
