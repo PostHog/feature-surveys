@@ -164,7 +164,7 @@ export function inject({ config, posthog }) {
             onsubmit: function (e) {
                 e.preventDefault()
                 const sessionRecordingUrl = getSessionRecordingUrl()
-                posthog.capture(`${survey.name} survey sent`, {
+                posthog.capture('survey sent', {
                     $survey_name: survey.name,
                     $survey_id: survey.id,
                     $survey_question: survey.question,
