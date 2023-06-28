@@ -225,33 +225,34 @@ export function inject({ config, posthog }) {
         posthog?.getActiveMatchingSurveys((surveys) => {
             surveys.forEach((survey) => {
                 if (document.getElementsByClassName(`PostHogSurvey${survey.id}`).length == 0) {
-                const surveyName = survey.name.replace(/\s/g, "-")
-                if (!localStorage.getItem(`seenSurvey_${surveyName}_${survey.id}`)) {
-                    const shadow = createShadow(style(surveyName, survey?.appearance), survey.id)
-                    const surveyPopup = createSurveyPopup(survey, surveyName)
-                    addListeners(surveyPopup, surveyName, survey.id, survey.name)
-                    shadow.appendChild(surveyPopup)
-                    window.dispatchEvent(new Event('PHSurveyShown'))
-                    const sessionRecordingUrl = getSessionRecordingUrl()
-                    posthog.capture('survey shown', {
-                        $survey_name: survey.name,
-                        $survey_id: survey.id,
-                        sessionRecordingUrl: sessionRecordingUrl,
-                    })
+                    const surveyName = survey.name.replace(/\s/g, "-")
+                    if (!localStorage.getItem(`seenSurvey_${surveyName}_${survey.id}`)) {
+                        const shadow = createShadow(style(surveyName, survey?.appearance), survey.id)
+                        const surveyPopup = createSurveyPopup(survey, surveyName)
+                        addListeners(surveyPopup, surveyName, survey.id, survey.name)
+                        shadow.appendChild(surveyPopup)
+                        window.dispatchEvent(new Event('PHSurveyShown'))
+                        const sessionRecordingUrl = getSessionRecordingUrl()
+                        posthog.capture('survey shown', {
+                            $survey_name: survey.name,
+                            $survey_id: survey.id,
+                            sessionRecordingUrl: sessionRecordingUrl,
+                        })
+                    }
                 }
-            }
             })
         }, true)
     }
 
     callSurveys(posthog)
 
-    let currentUrl = location.href;
-    if (location.href)
-    setInterval(() => {
-        if (location.href !== currentUrl) {
-            currentUrl = location.href;
-            callSurveys(posthog);
-        }
-    }, 1500);
+    let currentUrl = location.href
+    if (location.href) {
+        setInterval(() => {
+            if (location.href !== currentUrl) {
+                currentUrl = location.href
+                callSurveys(posthog)
+            }
+        }, 1500)
+    }
 }
