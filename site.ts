@@ -209,7 +209,6 @@ export function inject({ config, posthog }) {
                 $survey_id: surveyId,
                 sessionRecordingUrl: sessionRecordingUrl,
             })
-            sessionStorage.setItem("PostHogSurveyOnScreen", "false")
             window.dispatchEvent(new Event('PHSurveyClosed'))
         })
 
@@ -225,7 +224,7 @@ export function inject({ config, posthog }) {
     const callSurveys = (posthog) => {
         posthog?.getActiveMatchingSurveys((surveys) => {
             surveys.forEach((survey) => {
-                if (sessionStorage.getItem("PostHogSurveyOnScreen") === "false") {
+                if (document.querySelectorAll("div[class^='PostHogSurvey']").length === 0) {
                     const surveyName = survey.name.replace(/\s/g, "-")
                     if (!localStorage.getItem(`seenSurvey_${surveyName}_${survey.id}`)) {
                         const shadow = createShadow(style(surveyName, survey?.appearance), survey.id)
@@ -239,7 +238,6 @@ export function inject({ config, posthog }) {
                             $survey_id: survey.id,
                             sessionRecordingUrl: sessionRecordingUrl,
                         })
-                        sessionStorage.setItem(`PostHogSurveyOnScreen`, "true")
                     }
                 }
             })
