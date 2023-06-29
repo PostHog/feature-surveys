@@ -1,7 +1,7 @@
 const posthogLogo = '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="12" viewBox="0 0 50 30" fill="none"><path d="M10.8914 17.2057c-.3685.7371-1.42031.7371-1.78884 0L8.2212 15.443c-.14077-.2815-.14077-.6129 0-.8944l.88136-1.7627c.36853-.7371 1.42034-.7371 1.78884 0l.8814 1.7627c.1407.2815.1407.6129 0 .8944l-.8814 1.7627zM10.8914 27.2028c-.3685.737-1.42031.737-1.78884 0L8.2212 25.44c-.14077-.2815-.14077-.6129 0-.8944l.88136-1.7627c.36853-.7371 1.42034-.7371 1.78884 0l.8814 1.7627c.1407.2815.1407.6129 0 .8944l-.8814 1.7628z" fill="##6A6B69"/><path d="M0 23.4082c0-.8909 1.07714-1.3371 1.70711-.7071l4.58338 4.5834c.62997.63.1838 1.7071-.7071 1.7071H.999999c-.552284 0-.999999-.4477-.999999-1v-4.5834zm0-4.8278c0 .2652.105357.5196.292893.7071l9.411217 9.4112c.18753.1875.44189.2929.70709.2929h5.1692c.8909 0 1.3371-1.0771.7071-1.7071L1.70711 12.7041C1.07714 12.0741 0 12.5203 0 13.4112v5.1692zm0-9.99701c0 .26521.105357.51957.292893.7071L19.7011 28.6987c.1875.1875.4419.2929.7071.2929h5.1692c.8909 0 1.3371-1.0771.7071-1.7071L1.70711 2.70711C1.07715 2.07715 0 2.52331 0 3.41421v5.16918zm9.997 0c0 .26521.1054.51957.2929.7071l17.994 17.99401c.63.63 1.7071.1838 1.7071-.7071v-5.1692c0-.2652-.1054-.5196-.2929-.7071l-17.994-17.994c-.63-.62996-1.7071-.18379-1.7071.70711v5.16918zm11.7041-5.87628c-.63-.62997-1.7071-.1838-1.7071.7071v5.16918c0 .26521.1054.51957.2929.7071l7.997 7.99701c.63.63 1.7071.1838 1.7071-.7071v-5.1692c0-.2652-.1054-.5196-.2929-.7071l-7.997-7.99699z" fill="#6A6B69"/><path d="M42.5248 23.5308l-9.4127-9.4127c-.63-.63-1.7071-.1838-1.7071.7071v13.1664c0 .5523.4477 1 1 1h14.5806c.5523 0 1-.4477 1-1v-1.199c0-.5523-.4496-.9934-.9973-1.0647-1.6807-.2188-3.2528-.9864-4.4635-2.1971zm-6.3213 2.2618c-.8829 0-1.5995-.7166-1.5995-1.5996 0-.8829.7166-1.5995 1.5995-1.5995.883 0 1.5996.7166 1.5996 1.5995 0 .883-.7166 1.5996-1.5996 1.5996z" fill="#6A6B69"/><path d="M0 27.9916c0 .5523.447715 1 1 1h4.58339c.8909 0 1.33707-1.0771.70711-1.7071l-4.58339-4.5834C1.07714 22.0711 0 22.5173 0 23.4082v4.5834zM9.997 10.997L1.70711 2.70711C1.07714 2.07714 0 2.52331 0 3.41421v5.16918c0 .26521.105357.51957.292893.7071L9.997 18.9946V10.997zM1.70711 12.7041C1.07714 12.0741 0 12.5203 0 13.4112v5.1692c0 .2652.105357.5196.292893.7071L9.997 28.9916V20.994l-8.28989-8.2899z" fill="#6A6B69"/><path d="M19.994 11.4112c0-.2652-.1053-.5196-.2929-.7071l-7.997-7.99699c-.6299-.62997-1.70709-.1838-1.70709.7071v5.16918c0 .26521.10539.51957.29289.7071l9.7041 9.70411v-7.5834zM9.99701 28.9916h5.58339c.8909 0 1.3371-1.0771.7071-1.7071L9.99701 20.994v7.9976zM9.99701 10.997v7.5834c0 .2652.10539.5196.29289.7071l9.7041 9.7041v-7.5834c0-.2652-.1053-.5196-.2929-.7071L9.99701 10.997z" fill="#6a6b69"/></svg>'
 
-const style = (name, appearance) => `
-    .${name}-form {
+const style = (id, appearance) => `
+    .survey-${id}-form {
         position: fixed;
         bottom: 3vh;
         right: 20px;
@@ -17,7 +17,7 @@ const style = (name, appearance) => `
         filter: grayscale(100%);
         cursor: not-allowed;
     }
-    .${name}-form {
+    .survey-${id}-form {
         flex-direction: column;
         background: ${appearance?.backgroundColor || 'white'};
         border: 1px solid #f0f0f0;
@@ -25,7 +25,7 @@ const style = (name, appearance) => `
         padding-top: 5px;
         box-shadow: -6px 0 16px -8px rgb(0 0 0 / 8%), -9px 0 28px 0 rgb(0 0 0 / 5%), -12px 0 48px 16px rgb(0 0 0 / 3%);
     }
-    .${name}-form textarea {
+    .survey-${id}-form textarea {
         color: #2d2d2d;
         font-size: 14px;
         font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", "Roboto", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
@@ -88,7 +88,7 @@ const style = (name, appearance) => `
         padding-top: .5rem;
         text-align: center;
     }
-    .${name}-box {
+    .survey-${id}-box {
         padding: .5rem 1rem;
         display: flex;
         flex-direction: column;
@@ -126,8 +126,9 @@ export function inject({ config, posthog }) {
         return sessionId ? `${api_host}/recordings/${sessionId}?t=${recordingStartTime}` : undefined
     }
 
-    const createShadow = (styleSheet: string) => {
+    const createShadow = (styleSheet: string, surveyId) => {
         const div = document.createElement('div')
+        div.className = `PostHogSurvey${surveyId}`
         const shadow = div.attachShadow({ mode: 'open' })
         if (styleSheet) {
             const styleElement = Object.assign(document.createElement('style'), {
@@ -139,9 +140,9 @@ export function inject({ config, posthog }) {
         return shadow
     }
 
-    const createSurveyPopup = (survey, surveyName) => {
+    const createSurveyPopup = (survey) => {
         const form = `
-        <div class="${surveyName}-box">
+        <div class="survey-${survey.id}-box">
             <div class="cancel-btn-wrapper">
             <button class="form-cancel" type="cancel">X</button>
             </div>
@@ -159,7 +160,7 @@ export function inject({ config, posthog }) {
     `
 
         const formElement = Object.assign(document.createElement('form'), {
-            className: `${surveyName}-form`,
+            className: `survey-${survey.id}-form`,
             innerHTML: form,
             onsubmit: function (e) {
                 e.preventDefault()
@@ -171,7 +172,7 @@ export function inject({ config, posthog }) {
                     $survey_response: e.target.survey.value,
                     sessionRecordingUrl: sessionRecordingUrl,
                 })
-                closeSurveyPopup(surveyName, survey.id, formElement)
+                closeSurveyPopup(survey.id, formElement)
             }
         })
         adjustSurveyAppearance(survey, formElement)
@@ -179,9 +180,9 @@ export function inject({ config, posthog }) {
         return formElement
     }
 
-    const closeSurveyPopup = (surveyName: string, surveyId: string, surveyPopup: HTMLFormElement) => {
+    const closeSurveyPopup = (surveyId: string, surveyPopup: HTMLFormElement) => {
         Object.assign(surveyPopup.style, { display: 'none' })
-        localStorage.setItem(`seenSurvey_${surveyName}_${surveyId}`, "true")
+        localStorage.setItem(`seenSurvey_${surveyId}`, "true")
         window.setTimeout(() => {
             window.dispatchEvent(new Event('PHSurveyClosed'))
         }, 2000)
@@ -193,7 +194,7 @@ export function inject({ config, posthog }) {
         surveyQuestion.innerText = survey.questions[0].question || ''
     }
 
-    const addListeners = (surveyPopup, surveyName, surveyId, surveyEventName) => {
+    const addListeners = (surveyPopup, surveyId, surveyEventName) => {
         const cancelButton = surveyPopup.getElementsByClassName('form-cancel')[0] as HTMLButtonElement
         const textarea = surveyPopup.getElementsByClassName('survey-textarea')[0] as HTMLTextAreaElement
         const submitButton = surveyPopup.getElementsByClassName('form-submit')[0] as HTMLButtonElement
@@ -201,7 +202,7 @@ export function inject({ config, posthog }) {
         cancelButton.addEventListener('click', (e) => {
             e.preventDefault()
             Object.assign(surveyPopup.style, { display: 'none' })
-            localStorage.setItem(`seenSurvey_${surveyName}_${surveyId}`, "true")
+            localStorage.setItem(`seenSurvey_${surveyId}`, "true")
             const sessionRecordingUrl = getSessionRecordingUrl()
             posthog.capture('survey dismissed', {
                 $survey_name: surveyEventName,
@@ -220,22 +221,37 @@ export function inject({ config, posthog }) {
         })
     }
 
-    posthog?.getActiveMatchingSurveys((surveys) => {
-        surveys.forEach((survey) => {
-            const surveyName = survey.name.replace(/\s/g , "-")
-            if (!localStorage.getItem(`seenSurvey_${surveyName}_${survey.id}`)) {
-                const shadow = createShadow(style(surveyName, survey?.appearance))
-                const surveyPopup = createSurveyPopup(survey, surveyName)
-                addListeners(surveyPopup, surveyName, survey.id, survey.name)
-                shadow.appendChild(surveyPopup)
-                window.dispatchEvent(new Event('PHSurveyShown'))
-                const sessionRecordingUrl = getSessionRecordingUrl()
-                posthog.capture('survey shown', {
-                    $survey_name: survey.name,
-                    $survey_id: survey.id,
-                    sessionRecordingUrl: sessionRecordingUrl,
-                })
+    const callSurveys = (posthog) => {
+        posthog?.getActiveMatchingSurveys((surveys) => {
+            surveys.forEach((survey) => {
+                if (document.querySelectorAll("div[class^='PostHogSurvey']").length === 0) {
+                    if (!localStorage.getItem(`seenSurvey_${survey.id}`)) {
+                        const shadow = createShadow(style(survey.id, survey?.appearance), survey.id)
+                        const surveyPopup = createSurveyPopup(survey)
+                        addListeners(surveyPopup, survey.id, survey.name)
+                        shadow.appendChild(surveyPopup)
+                        window.dispatchEvent(new Event('PHSurveyShown'))
+                        const sessionRecordingUrl = getSessionRecordingUrl()
+                        posthog.capture('survey shown', {
+                            $survey_name: survey.name,
+                            $survey_id: survey.id,
+                            sessionRecordingUrl: sessionRecordingUrl,
+                        })
+                    }
+                }
+            })
+        }, true)
+    }
+
+    callSurveys(posthog)
+
+    let currentUrl = location.href
+    if (location.href) {
+        setInterval(() => {
+            if (location.href !== currentUrl) {
+                currentUrl = location.href
+                callSurveys(posthog)
             }
-        })
-    }, true)
+        }, 1500)
+    }
 }
