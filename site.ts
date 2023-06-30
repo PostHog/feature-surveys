@@ -104,6 +104,13 @@ const style = (id, appearance) => `
         flex-direction: column;
         padding-bottom: 4px;
     }
+    .description {
+        text-align: center;
+        font-size: 14px;
+        margin-top: .75rem;
+        margin-bottom: .75rem;
+        color: ${appearance?.descriptionTextColor || 'black'};
+    }
 `
 
 export function inject({ config, posthog }) {
@@ -141,18 +148,22 @@ export function inject({ config, posthog }) {
     }
 
     const createSurveyPopup = (survey) => {
+        const surveyQuestionType = survey.questions[0].type
+        const surveyDescription = survey.questions[0].description
+        const question = survey.questions[0].question
         const form = `
         <div class="survey-${survey.id}-box">
             <div class="cancel-btn-wrapper">
-            <button class="form-cancel" type="cancel">X</button>
+                <button class="form-cancel" type="cancel">X</button>
             </div>
             <div class="question-textarea-wrapper">
-            <div class="survey-question"></div>
-            <textarea class="survey-textarea" name="survey" rows=4></textarea>
+                <div class="survey-question">${question}</div>
+                ${surveyDescription ? `<span class="description">${surveyDescription}</span>` : ''}
+                ${surveyQuestionType === 'open' ? `<textarea class="survey-textarea" name="survey" rows=4></textarea>` : ''}
             </div>
             <div class="bottom-section">
                 <div class="buttons">
-                    <button class="form-submit" type="submit" disabled>Submit</button>
+                    <button class="form-submit" type="submit">${survey.appearance?.submitButtonText || 'Submit'}</button>
                 </div>
                 <div class="footer-branding"><div>powered by ${posthogLogo} PostHog</div></div>
             </div>
@@ -165,17 +176,20 @@ export function inject({ config, posthog }) {
             onsubmit: function (e) {
                 e.preventDefault()
                 const sessionRecordingUrl = getSessionRecordingUrl()
+                const surveyQuestionType = survey.questions[0].type
                 posthog.capture('survey sent', {
                     $survey_name: survey.name,
                     $survey_id: survey.id,
                     $survey_question: survey.question,
-                    $survey_response: e.target.survey.value,
+                    $survey_response: surveyQuestionType === 'open' ? e.target.survey.value : 'link clicked',
                     sessionRecordingUrl: sessionRecordingUrl,
                 })
+                if (surveyQuestionType === 'link') {
+                    window.open(survey.questions[0].link)
+                }
                 closeSurveyPopup(survey.id, formElement)
             }
         })
-        adjustSurveyAppearance(survey, formElement)
 
         return formElement
     }
@@ -189,14 +203,8 @@ export function inject({ config, posthog }) {
         surveyPopup.reset()
     }
 
-    const adjustSurveyAppearance = (survey, formElement) => {
-        const surveyQuestion = formElement.getElementsByClassName('survey-question')[0] as HTMLElement
-        surveyQuestion.innerText = survey.questions[0].question || ''
-    }
-
     const addListeners = (surveyPopup, surveyId, surveyEventName) => {
         const cancelButton = surveyPopup.getElementsByClassName('form-cancel')[0] as HTMLButtonElement
-        const textarea = surveyPopup.getElementsByClassName('survey-textarea')[0] as HTMLTextAreaElement
         const submitButton = surveyPopup.getElementsByClassName('form-submit')[0] as HTMLButtonElement
 
         cancelButton.addEventListener('click', (e) => {
@@ -210,14 +218,6 @@ export function inject({ config, posthog }) {
                 sessionRecordingUrl: sessionRecordingUrl,
             })
             window.dispatchEvent(new Event('PHSurveyClosed'))
-        })
-
-        textarea.addEventListener('input', (e) => {
-            if (textarea.value.length > 0) {
-                submitButton.disabled = false
-            } else {
-                submitButton.disabled = true
-            }
         })
     }
 
