@@ -180,7 +180,7 @@ export function inject({ config, posthog }) {
                 posthog.capture('survey sent', {
                     $survey_name: survey.name,
                     $survey_id: survey.id,
-                    $survey_question: survey.question,
+                    $survey_question: survey.questions[0].question,
                     $survey_response: surveyQuestionType === 'open' ? e.target.survey.value : 'link clicked',
                     sessionRecordingUrl: sessionRecordingUrl,
                 })
