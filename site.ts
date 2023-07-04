@@ -221,7 +221,7 @@ export function inject({ config, posthog }) {
         })
     }
 
-    const callSurveys = (posthog) => {
+    const callSurveys = (posthog, forceReload = false) => {
         posthog?.getActiveMatchingSurveys((surveys) => {
             surveys.forEach((survey) => {
                 if (document.querySelectorAll("div[class^='PostHogSurvey']").length === 0) {
@@ -240,17 +240,17 @@ export function inject({ config, posthog }) {
                     }
                 }
             })
-        }, true)
+        }, forceReload)
     }
 
-    callSurveys(posthog)
+    callSurveys(posthog, true)
 
     let currentUrl = location.href
     if (location.href) {
         setInterval(() => {
             if (location.href !== currentUrl) {
                 currentUrl = location.href
-                callSurveys(posthog)
+                callSurveys(posthog, false)
             }
         }, 1500)
     }
