@@ -223,7 +223,8 @@ export function inject({ config, posthog }) {
 
     const callSurveys = (posthog, forceReload = false) => {
         posthog?.getActiveMatchingSurveys((surveys) => {
-            surveys.forEach((survey) => {
+            const nonAPISurveys = surveys.filter(survey => survey.type !== 'api')
+            nonAPISurveys.forEach((survey) => {
                 if (document.querySelectorAll("div[class^='PostHogSurvey']").length === 0) {
                     if (!localStorage.getItem(`seenSurvey_${survey.id}`)) {
                         const shadow = createShadow(style(survey.id, survey?.appearance), survey.id)
