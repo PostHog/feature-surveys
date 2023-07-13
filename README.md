@@ -24,3 +24,17 @@ pnpm start
 ```
 
 Then browse to [http://localhost:3040/](http://localhost:3040/), open `site.ts` in an editor, and hack away. 
+
+## Events
+
+The following events can be used to trigger actions when a survey is shown/completed/dismissed. This can be useful if the survey overlaps with another widget.
+
+```javascript
+window.addEventListener('PHSurveyShown', function (e) {
+   ..
+});
+
+window.addEventListener('PHSurveyClosed', function (e) {
+   ..
+});
+```
