@@ -14,7 +14,7 @@ const style = (id, appearance) => `
         font-weight: normal;
         font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", "Roboto", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
         text-align: left;
-        max-width: ${parseInt(appearance?.maxWidth) || 300}px;
+        max-width: ${parseInt(appearance?.maxWidth) || 320}px;
         z-index: ${parseInt(appearance?.zIndex) || 99999};
     }
     .form-submit[disabled] {
@@ -101,7 +101,7 @@ const style = (id, appearance) => `
     .survey-question {
         padding-top: 4px;
         padding-bottom: 4px;
-        text-align: center;
+        font-weight: 500;
         color: ${appearance?.textColor || 'black'};
     }
     .question-textarea-wrapper {
@@ -110,13 +110,72 @@ const style = (id, appearance) => `
         padding-bottom: 4px;
     }
     .description {
-        text-align: center;
         font-size: 14px;
         margin-top: .75rem;
         margin-bottom: .75rem;
-        color: ${appearance?.descriptionTextColor || 'black'};
+        color: ${appearance?.descriptionTextColor || '#4b4b52'};
+    }
+    .rating-options {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-evenly;
+        margin-top: .5rem;
+        margin-bottom: .5rem;
+    }
+    .ratings-number {
+        background-color: #e0e2e8;
+        font-size: 14px;
+        border-radius: 6px;
+        border: 1px solid #e0e2e8;
+        padding: 8px;
+    }
+    .ratings-number:hover {
+        cursor: pointer;
+        filter: brightness(.75);
+    }
+    .rating-options-buttons {
+        display: flex;
+        justify-content: space-evenly;
+    }
+    .rating-options-emoji {
+        display: flex;
+        justify-content: space-evenly;
+    }
+    .ratings-emoji {
+        font-size: 16px;
+        background-color: transparent;
+        border: none;
+    }
+    .ratings-emoji:hover {
+        cursor: pointer;
+    }
+    .emoji-svg:hover {
+        fill: ${appearance?.ratingButtonHoverColor || 'coral'};
+    }
+    .rating-text {
+        display: flex;
+        flex-direction: row;
+        font-size: 12px;
+        justify-content: space-between;
+        margin-top: .5rem;
+        margin-bottom: .5rem;
+        color: #4b4b52;
+    }
+    .rating-section {
+        margin-bottom: .5rem;
     }
 `
+export const getSessionRecordingUrl = (posthog) => {
+    const sessionId = posthog?.sessionRecording?.sessionId
+    const LOOK_BACK = 30
+    const recordingStartTime = Math.max(
+        Math.floor((new Date().getTime() - (posthog?.sessionManager?._sessionStartTimestamp || 0)) / 1000) -
+        LOOK_BACK,
+        0
+    )
+    const api_host = posthog?.config?.api_host || 'https://app.posthog.com'
+    return sessionId ? `${api_host}/recordings/${sessionId}?t=${recordingStartTime}` : undefined
+}
 
 export function inject({ config, posthog }) {
     if (config.domains) {
@@ -124,18 +183,6 @@ export function inject({ config, posthog }) {
         if (domains.length > 0 && domains.indexOf(window.location.hostname) === -1) {
             return
         }
-    }
-
-    const getSessionRecordingUrl = () => {
-        const sessionId = posthog?.sessionRecording?.sessionId
-        const LOOK_BACK = 30
-        const recordingStartTime = Math.max(
-            Math.floor((new Date().getTime() - (posthog?.sessionManager?._sessionStartTimestamp || 0)) / 1000) -
-            LOOK_BACK,
-            0
-        )
-        const api_host = posthog?.config?.api_host || 'https://app.posthog.com'
-        return sessionId ? `${api_host}/recordings/${sessionId}?t=${recordingStartTime}` : undefined
     }
 
     const createShadow = (styleSheet: string, surveyId) => {
@@ -150,6 +197,15 @@ export function inject({ config, posthog }) {
         }
         document.body.appendChild(div)
         return shadow
+    }
+
+    const closeSurveyPopup = (surveyId: string, surveyPopup: HTMLFormElement) => {
+        Object.assign(surveyPopup.style, { display: 'none' })
+        localStorage.setItem(`seenSurvey_${surveyId}`, "true")
+        window.setTimeout(() => {
+            window.dispatchEvent(new Event('PHSurveyClosed'))
+        }, 2000)
+        surveyPopup.reset()
     }
 
     const createSurveyPopup = (survey) => {
@@ -174,13 +230,12 @@ export function inject({ config, posthog }) {
             </div>
         </div>
     `
-
         const formElement = Object.assign(document.createElement('form'), {
             className: `survey-${survey.id}-form`,
             innerHTML: form,
             onsubmit: function (e) {
                 e.preventDefault()
-                const sessionRecordingUrl = getSessionRecordingUrl()
+                const sessionRecordingUrl = getSessionRecordingUrl(posthog)
                 const surveyQuestionType = survey.questions[0].type
                 posthog.capture('survey sent', {
                     $survey_name: survey.name,
@@ -199,24 +254,15 @@ export function inject({ config, posthog }) {
         return formElement
     }
 
-    const closeSurveyPopup = (surveyId: string, surveyPopup: HTMLFormElement) => {
-        Object.assign(surveyPopup.style, { display: 'none' })
-        localStorage.setItem(`seenSurvey_${surveyId}`, "true")
-        window.setTimeout(() => {
-            window.dispatchEvent(new Event('PHSurveyClosed'))
-        }, 2000)
-        surveyPopup.reset()
-    }
 
-    const addListeners = (surveyPopup, surveyId, surveyEventName) => {
-        const cancelButton = surveyPopup.getElementsByClassName('form-cancel')[0] as HTMLButtonElement
-        const submitButton = surveyPopup.getElementsByClassName('form-submit')[0] as HTMLButtonElement
+    const addCancelListeners = (surveyPopup, surveyId, surveyEventName) => {
+        const cancelButton = surveyPopup.getElementsByClassName('form-cancel')?.[0] as HTMLButtonElement
 
         cancelButton.addEventListener('click', (e) => {
             e.preventDefault()
             Object.assign(surveyPopup.style, { display: 'none' })
             localStorage.setItem(`seenSurvey_${surveyId}`, "true")
-            const sessionRecordingUrl = getSessionRecordingUrl()
+            const sessionRecordingUrl = getSessionRecordingUrl(posthog)
             posthog.capture('survey dismissed', {
                 $survey_name: surveyEventName,
                 $survey_id: surveyId,
@@ -233,11 +279,18 @@ export function inject({ config, posthog }) {
                 if (document.querySelectorAll("div[class^='PostHogSurvey']").length === 0) {
                     if (!localStorage.getItem(`seenSurvey_${survey.id}`)) {
                         const shadow = createShadow(style(survey.id, survey?.appearance), survey.id)
-                        const surveyPopup = createSurveyPopup(survey)
-                        addListeners(surveyPopup, survey.id, survey.name)
+                        let surveyPopup
+                        const surveyQuestionType = survey.questions[0].type
+                        if (surveyQuestionType === 'rating') {
+                            surveyPopup = createRatingsPopup(survey)
+                        } else if (surveyQuestionType === 'open' || surveyQuestionType === 'link') {
+                            surveyPopup = createSurveyPopup(survey)
+                        }
+                        addCancelListeners(surveyPopup, survey.id, survey.name)
                         shadow.appendChild(surveyPopup)
+
                         window.dispatchEvent(new Event('PHSurveyShown'))
-                        const sessionRecordingUrl = getSessionRecordingUrl()
+                        const sessionRecordingUrl = getSessionRecordingUrl(posthog)
                         posthog.capture('survey shown', {
                             $survey_name: survey.name,
                             $survey_id: survey.id,
