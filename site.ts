@@ -312,8 +312,8 @@ export function inject({ config, posthog }) {
                 <div class="rating-options">
                 </div>
                 <div class="rating-text">
-                <div>${survey.questions[0].lower_bound_label}</div>
-                <div>${survey.questions[0].upper_bound_label}</div>
+                <div>${survey.questions[0].lowerBoundLabel}</div>
+                <div>${survey.questions[0].upperBoundLabel}</div>
                 </div>
                 <div class="footer-branding"><div>powered by ${posthogLogo} PostHog</div></div>
             </div>
