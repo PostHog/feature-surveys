@@ -272,6 +272,76 @@ export function inject({ config, posthog }) {
         })
     }
 
+    const createRatingsPopup = (survey) => {
+        const scale = survey.questions[0].scale
+        const displayType = survey.questions[0].display
+        let ratingOptionsElement
+        if (displayType === 'number') {
+            ratingOptionsElement = document.createElement('div')
+            ratingOptionsElement.className = 'rating-options-buttons'
+            for (let i = 1; i <= scale; i++) {
+                const buttonElement = document.createElement('button')
+                buttonElement.className = `ratings-number rating_${i}`
+                buttonElement.type = 'submit'
+                buttonElement.value = `${i}`
+                buttonElement.innerHTML = `${i}`
+                ratingOptionsElement.append(buttonElement)
+            }
+        } else if (displayType === 'emoji') {
+            ratingOptionsElement = document.createElement('div')
+            ratingOptionsElement.className = 'rating-options-emoji'
+            const threeEmojis = [dissatisfiedEmoji, neutralEmoji, satisfiedEmoji]
+            const fiveEmojis = [veryDissatisfiedEmoji, dissatisfiedEmoji, neutralEmoji, satisfiedEmoji, verySatisfiedEmoji]
+            for (let i = 1; i <= scale; i++) {
+                const emojiElement = document.createElement('button')
+                emojiElement.className = `ratings-emoji rating_${i}`
+                emojiElement.type = 'submit'
+                emojiElement.value = `${i}`
+                emojiElement.innerHTML = scale === 3 ? threeEmojis[i - 1] : fiveEmojis[i - 1]
+                ratingOptionsElement.append(emojiElement)
+            }
+        }
+        const ratingsForm = `
+        <div class="survey-${survey.id}-box">
+            <div class="cancel-btn-wrapper">
+                <button class="form-cancel" type="cancel">X</button>
+            </div>
+            <div class="survey-question">${survey.questions[0].question}</div>
+            ${survey.questions[0].description ? `<span class="description">${survey.questions[0].description}</span>` : ''}
+            <div class="rating-section">
+                <div class="rating-options">
+                </div>
+                <div class="rating-text">
+                <div>${survey.questions[0].lower_bound_label}</div>
+                <div>${survey.questions[0].upper_bound_label}</div>
+                </div>
+                <div class="footer-branding"><div>powered by ${posthogLogo} PostHog</div></div>
+            </div>
+        </div>
+                `
+        const formElement = Object.assign(document.createElement('form'), {
+            className: `survey-${survey.id}-form`,
+            innerHTML: ratingsForm,
+        })
+        formElement.getElementsByClassName('rating-options')[0].append(ratingOptionsElement)
+        for (const x of Array(survey.questions[0].scale).keys()) {
+            formElement.getElementsByClassName(`rating_${x + 1}`)[0].addEventListener('click', (e: Event & { currentTarget: HTMLButtonElement }) => {
+                e.preventDefault()
+                const sessionRecordingUrl = getSessionRecordingUrl(posthog)
+                posthog.capture('survey sent', {
+                    $survey_name: survey.name,
+                    $survey_id: survey.id,
+                    $survey_question: survey.questions[0].question,
+                    $survey_response: parseInt(e.currentTarget.value),
+                    sessionRecordingUrl: sessionRecordingUrl,
+                })
+                closeSurveyPopup(survey.id, formElement)
+            })
+        }
+
+        return formElement
+    }
+
     const callSurveys = (posthog, forceReload = false) => {
         posthog?.getActiveMatchingSurveys((surveys) => {
             const nonAPISurveys = surveys.filter(survey => survey.type !== 'api')
