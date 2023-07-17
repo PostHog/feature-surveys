@@ -115,13 +115,6 @@ const style = (id, appearance) => `
         margin-bottom: .75rem;
         color: ${appearance?.descriptionTextColor || '#4b4b52'};
     }
-    .rating-options {
-        display: flex;
-        flex-direction: column;
-        justify-content: space-evenly;
-        margin-top: .5rem;
-        margin-bottom: .5rem;
-    }
     .ratings-number {
         background-color: #e0e2e8;
         font-size: 14px;
@@ -323,7 +316,7 @@ export function inject({ config, posthog }) {
             className: `survey-${survey.id}-form`,
             innerHTML: ratingsForm,
         })
-        formElement.getElementsByClassName('rating-options')[0].append(ratingOptionsElement)
+        formElement.getElementsByClassName('rating-options')[0].insertAdjacentElement('afterbegin', ratingOptionsElement)
         for (const x of Array(survey.questions[0].scale).keys()) {
             formElement.getElementsByClassName(`rating_${x + 1}`)[0].addEventListener('click', (e: Event & { currentTarget: HTMLButtonElement }) => {
                 e.preventDefault()
