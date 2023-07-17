@@ -158,17 +158,6 @@ const style = (id, appearance) => `
         margin-bottom: .5rem;
     }
 `
-export const getSessionRecordingUrl = (posthog) => {
-    const sessionId = posthog?.sessionRecording?.sessionId
-    const LOOK_BACK = 30
-    const recordingStartTime = Math.max(
-        Math.floor((new Date().getTime() - (posthog?.sessionManager?._sessionStartTimestamp || 0)) / 1000) -
-        LOOK_BACK,
-        0
-    )
-    const api_host = posthog?.config?.api_host || 'https://app.posthog.com'
-    return sessionId ? `${api_host}/recordings/${sessionId}?t=${recordingStartTime}` : undefined
-}
 
 export function inject({ config, posthog }) {
     if (config.domains) {
@@ -228,14 +217,13 @@ export function inject({ config, posthog }) {
             innerHTML: form,
             onsubmit: function (e) {
                 e.preventDefault()
-                const sessionRecordingUrl = getSessionRecordingUrl(posthog)
                 const surveyQuestionType = survey.questions[0].type
                 posthog.capture('survey sent', {
                     $survey_name: survey.name,
                     $survey_id: survey.id,
                     $survey_question: survey.question,
                     $survey_response: surveyQuestionType === 'open' ? e.target.survey.value : 'link clicked',
-                    sessionRecordingUrl: sessionRecordingUrl,
+                    sessionRecordingUrl: posthog.get_session_replay_url(),
                 })
                 if (surveyQuestionType === 'link') {
                     window.open(survey.questions[0].link)
@@ -255,11 +243,10 @@ export function inject({ config, posthog }) {
             e.preventDefault()
             Object.assign(surveyPopup.style, { display: 'none' })
             localStorage.setItem(`seenSurvey_${surveyId}`, "true")
-            const sessionRecordingUrl = getSessionRecordingUrl(posthog)
             posthog.capture('survey dismissed', {
                 $survey_name: surveyEventName,
                 $survey_id: surveyId,
-                sessionRecordingUrl: sessionRecordingUrl,
+                sessionRecordingUrl: posthog.get_session_replay_url(),
             })
             window.dispatchEvent(new Event('PHSurveyClosed'))
         })
@@ -320,13 +307,12 @@ export function inject({ config, posthog }) {
         for (const x of Array(survey.questions[0].scale).keys()) {
             formElement.getElementsByClassName(`rating_${x + 1}`)[0].addEventListener('click', (e: Event & { currentTarget: HTMLButtonElement }) => {
                 e.preventDefault()
-                const sessionRecordingUrl = getSessionRecordingUrl(posthog)
                 posthog.capture('survey sent', {
                     $survey_name: survey.name,
                     $survey_id: survey.id,
                     $survey_question: survey.questions[0].question,
                     $survey_response: parseInt(e.currentTarget.value),
-                    sessionRecordingUrl: sessionRecordingUrl,
+                    sessionRecordingUrl: posthog.get_session_replay_url(),
                 })
                 closeSurveyPopup(survey.id, formElement)
             })
@@ -352,16 +338,15 @@ export function inject({ config, posthog }) {
                         addCancelListeners(surveyPopup, survey.id, survey.name)
                         shadow.appendChild(surveyPopup)
 
-                        window.dispatchEvent(new Event('PHSurveyShown'))
-                        const sessionRecordingUrl = getSessionRecordingUrl(posthog)
-                        posthog.capture('survey shown', {
-                            $survey_name: survey.name,
-                            $survey_id: survey.id,
-                            sessionRecordingUrl: sessionRecordingUrl,
-                        })
-                    }
+                    window.dispatchEvent(new Event('PHSurveyShown'))
+                    posthog.capture('survey shown', {
+                        $survey_name: survey.name,
+                        $survey_id: survey.id,
+                        sessionRecordingUrl: posthog.get_session_replay_url(),
+                    })
                 }
-            })
+            }
+        })
         }, forceReload)
     }
 
