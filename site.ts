@@ -255,9 +255,8 @@ export function inject({ config, posthog }) {
     const createRatingsPopup = (survey) => {
         const scale = survey.questions[0].scale
         const displayType = survey.questions[0].display
-        let ratingOptionsElement
+        let ratingOptionsElement = document.createElement('div')
         if (displayType === 'number') {
-            ratingOptionsElement = document.createElement('div')
             ratingOptionsElement.className = 'rating-options-buttons'
             for (let i = 1; i <= scale; i++) {
                 const buttonElement = document.createElement('button')
