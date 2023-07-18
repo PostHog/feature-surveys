@@ -126,6 +126,9 @@ const style = (id, appearance) => `
         cursor: pointer;
         filter: brightness(.75);
     }
+    .rating-options {
+        margin-top: .5rem;
+    }
     .rating-options-buttons {
         display: flex;
         justify-content: space-evenly;
