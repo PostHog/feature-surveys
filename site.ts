@@ -130,6 +130,9 @@ const style = (id, appearance) => `
         display: flex;
         justify-content: space-evenly;
     }
+    .max-numbers {
+        min-width: 280px;
+    }
     .rating-options-emoji {
         display: flex;
         justify-content: space-evenly;
@@ -257,7 +260,7 @@ export function inject({ config, posthog }) {
         const displayType = survey.questions[0].display
         let ratingOptionsElement = document.createElement('div')
         if (displayType === 'number') {
-            ratingOptionsElement.className = 'rating-options-buttons'
+            ratingOptionsElement.className = `rating-options-buttons ${scale === 10 ? 'max-numbers' : ''}`
             for (let i = 1; i <= scale; i++) {
                 const buttonElement = document.createElement('button')
                 buttonElement.className = `ratings-number rating_${i}`
@@ -267,7 +270,6 @@ export function inject({ config, posthog }) {
                 ratingOptionsElement.append(buttonElement)
             }
         } else if (displayType === 'emoji') {
-            ratingOptionsElement = document.createElement('div')
             ratingOptionsElement.className = 'rating-options-emoji'
             const threeEmojis = [dissatisfiedEmoji, neutralEmoji, satisfiedEmoji]
             const fiveEmojis = [veryDissatisfiedEmoji, dissatisfiedEmoji, neutralEmoji, satisfiedEmoji, verySatisfiedEmoji]
