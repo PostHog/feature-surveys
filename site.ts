@@ -117,15 +117,15 @@ const style = (id, appearance) => `
         color: ${appearance?.descriptionTextColor || '#4b4b52'};
     }
     .ratings-number {
-        background-color: #e0e2e8;
+        background-color: ${appearance?.ratingButtonColor || '#e0e2e8'};
         font-size: 14px;
         border-radius: 6px;
-        border: 1px solid #e0e2e8;
+        border: 1px solid ${appearance?.ratingButtonColor || '#e0e2e8'};
         padding: 8px;
     }
     .ratings-number:hover {
         cursor: pointer;
-        filter: brightness(.75);
+        filter: brightness(1.1);
     }
     .rating-options {
         margin-top: .5rem;
@@ -148,6 +148,9 @@ const style = (id, appearance) => `
     }
     .ratings-emoji:hover {
         cursor: pointer;
+    }
+    .emoji-svg {
+        fill: ${appearance?.ratingButtonColor || 'black'};
     }
     .emoji-svg:hover {
         fill: ${appearance?.ratingButtonHoverColor || 'coral'};
