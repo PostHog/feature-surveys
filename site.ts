@@ -398,7 +398,7 @@ export function inject({ config, posthog }) {
                     $survey_response: selectedChoices,
                     sessionRecordingUrl: posthog.get_session_replay_url(),
                 })
-                // closeSurveyPopup(survey.id, formElement)
+                closeSurveyPopup(survey.id, formElement)
             }
         })
         return formElement
