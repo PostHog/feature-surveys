@@ -360,6 +360,7 @@ export function inject({ config, posthog }) {
         const surveyQuestion = survey.questions[0].question
         const surveyDescription = survey.questions[0].description
         const surveyQuestionChoices = survey.questions[0].choices
+        const singleOrMultiSelect = survey.questions[0].type
         const form = `
         <div class="survey-${survey.id}-box">
             <div class="cancel-btn-wrapper">
@@ -369,8 +370,10 @@ export function inject({ config, posthog }) {
             ${surveyDescription ? `<span class="description">${surveyDescription}</span>` : ''}
             <div class="multiple-choice-options">
             ${surveyQuestionChoices.map((option, idx) => {
-            return `<div class="choice-option"><input type="radio" id=surveyQuestionMultipleChoice${idx} name="choice" value="${option}">
+                const inputType = singleOrMultiSelect === 'multiple_single' ? 'radio' : 'checkbox'
+                const singleOrMultiSelectString = `<div class="choice-option"><input type=${inputType} id=surveyQuestionMultipleChoice${idx} name="choice" value="${option}">
                 <label for=surveyQuestionMultipleChoice${idx}>${option}</label></div>`
+            return singleOrMultiSelectString
         }).join(' ')}
             </div>
             <div class="bottom-section">
@@ -387,57 +390,24 @@ export function inject({ config, posthog }) {
             innerHTML: form,
             onsubmit: (e) => {
                 e.preventDefault()
-                const selectedChoice = e.target.querySelector('input[type=radio]:checked')
+                const selectedChoices = singleOrMultiSelect === 'multiple_single' ? e.target.querySelector('input[type=radio]:checked').value : [...e.target.querySelectorAll('input[type=checkbox]:checked')].map((choice) => choice.value)
                 posthog.capture('survey sent', {
                     $survey_name: survey.name,
                     $survey_id: survey.id,
                     $survey_question: survey.question,
-                    $survey_response: selectedChoice.value,
-                    // sessionRecordingUrl: posthog.get_session_replay_url(),
+                    $survey_response: selectedChoices,
+                    sessionRecordingUrl: posthog.get_session_replay_url(),
                 })
-                closeSurveyPopup(survey.id, formElement)
+                // closeSurveyPopup(survey.id, formElement)
             }
         })
-        // const formElement = Object.assign(document.createElement('form'), {
-        //     className: `survey-${survey.id}-form`,
-        //     innerHTML: form,
-        //     onsubmit: function (e) {
-        //         e.preventDefault()
-        //         const surveyQuestionType = survey.questions[0].type
-        //         posthog.capture('survey sent', {
-        //             $survey_name: survey.name,
-        //             $survey_id: survey.id,
-        //             $survey_question: survey.question,
-        //             $survey_response: surveyQuestionType === 'open' ? e.target.survey.value : 'link clicked',
-        //             sessionRecordingUrl: posthog.get_session_replay_url(),
-        //         })
-        //         if (surveyQuestionType === 'link') {
-        //             window.open(survey.questions[0].link)
-        //         }
-        //         closeSurveyPopup(survey.id, formElement)
-        //     }
-        // })
         return formElement
     }
 
     const callSurveys = (posthog, forceReload = false) => {
-        // posthog?.getActiveMatchingSurveys((surveys) => {
-        // const nonAPISurveys = surveys.filter(survey => survey.type !== 'api')
-        // nonAPISurveys.forEach((survey) => {
-        const ratingsSurvey = [{
-            questions: [{ question: 'How satisfied product ?', type: 'rating', description: 'hello', display: 'number', scale: 5, lower_bound_label: 'Not Satisfied', upper_bound_label: 'Very Satisfied' }],
-            name: 'rating-surv',
-            id: '123',
-            appearance: { ratingButtonHoverColor: 'pink', ratingButtonColor: 'pink' },
-        }]
-
-        const multipleChoiceSurvey = [{
-            questions: [{ question: 'why did you decide to use posthog?', description: 'hello', type: "multiple_single", choices: ["affordable pricing", "simple to use", "features variety", "improved company's product analytics"] }],
-            name: 'multiple-choice-surv',
-            id: 'a1b2c3',
-            appearance: null,
-        }].forEach((survey) => {
-            // const cre
+        posthog?.getActiveMatchingSurveys((surveys) => {
+        const nonAPISurveys = surveys.filter(survey => survey.type !== 'api')
+        nonAPISurveys.forEach((survey) => {
             if (document.querySelectorAll("div[class^='PostHogSurvey']").length === 0) {
                 if (!localStorage.getItem(`seenSurvey_${survey.id}`)) {
                     const shadow = createShadow(style(survey.id, survey?.appearance), survey.id)
@@ -462,7 +432,7 @@ export function inject({ config, posthog }) {
                 }
             }
         })
-        // }, forceReload)
+        }, forceReload)
     }
 
     callSurveys(posthog, true)
