@@ -370,7 +370,7 @@ export function inject({ config, posthog }) {
             ${surveyDescription ? `<span class="description">${surveyDescription}</span>` : ''}
             <div class="multiple-choice-options">
             ${surveyQuestionChoices.map((option, idx) => {
-                const inputType = singleOrMultiSelect === 'multiple_single' ? 'radio' : 'checkbox'
+                const inputType = singleOrMultiSelect === 'single_choice' ? 'radio' : 'checkbox'
                 const singleOrMultiSelectString = `<div class="choice-option"><input type=${inputType} id=surveyQuestionMultipleChoice${idx} name="choice" value="${option}">
                 <label for=surveyQuestionMultipleChoice${idx}>${option}</label></div>`
             return singleOrMultiSelectString
@@ -390,7 +390,7 @@ export function inject({ config, posthog }) {
             innerHTML: form,
             onsubmit: (e) => {
                 e.preventDefault()
-                const selectedChoices = singleOrMultiSelect === 'multiple_single' ? e.target.querySelector('input[type=radio]:checked').value : [...e.target.querySelectorAll('input[type=checkbox]:checked')].map((choice) => choice.value)
+                const selectedChoices = singleOrMultiSelect === 'single_choice' ? e.target.querySelector('input[type=radio]:checked').value : [...e.target.querySelectorAll('input[type=checkbox]:checked')].map((choice) => choice.value)
                 posthog.capture('survey sent', {
                     $survey_name: survey.name,
                     $survey_id: survey.id,
@@ -417,7 +417,7 @@ export function inject({ config, posthog }) {
                         surveyPopup = createRatingsPopup(survey)
                     } else if (surveyQuestionType === 'open' || surveyQuestionType === 'link') {
                         surveyPopup = createSurveyPopup(survey)
-                    } else if (surveyQuestionType === 'multiple_single' || surveyQuestionType === 'multiple_multi') {
+                    } else if (surveyQuestionType === 'single_choice' || surveyQuestionType === 'multiple_choice') {
                         surveyPopup = createMultipleChoicePopup(survey)
                     }
                     addCancelListeners(surveyPopup, survey.id, survey.name)
