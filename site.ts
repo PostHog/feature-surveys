@@ -167,6 +167,33 @@ const style = (id, appearance) => `
     .rating-section {
         margin-bottom: .5rem;
     }
+    .multiple-choice-options {
+        margin-bottom: .5rem;
+        margin-top: .5rem;
+        font-size: 14px;
+    }
+    .multiple-choice-options .choice-option {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        background: #00000003;
+        font-size: 14px;
+        padding: 10px 20px 10px 15px;
+        border: 1px solid #0000000d;
+        border-radius: 4px;
+        cursor: pointer;
+        margin-bottom: 6px;
+    }
+    .multiple-choice-options .choice-option:hover {
+        background: #0000000a;
+    }
+    .multiple-choice-options input {
+        cursor: pointer;
+    }
+    .multiple-choice-options label {
+        width: 100%;
+        cursor: pointer;
+    }
 `
 
 export function inject({ config, posthog }) {
@@ -329,22 +356,72 @@ export function inject({ config, posthog }) {
         return formElement
     }
 
+    const createMultipleChoicePopup = (survey) => {
+        const surveyQuestion = survey.questions[0].question
+        const surveyDescription = survey.questions[0].description
+        const surveyQuestionChoices = survey.questions[0].choices
+        const singleOrMultiSelect = survey.questions[0].type
+        const form = `
+        <div class="survey-${survey.id}-box">
+            <div class="cancel-btn-wrapper">
+                <button class="form-cancel" type="cancel">${cancelSVG}</button>
+            </div>
+            <div class="survey-question">${surveyQuestion}</div>
+            ${surveyDescription ? `<span class="description">${surveyDescription}</span>` : ''}
+            <div class="multiple-choice-options">
+            ${surveyQuestionChoices.map((option, idx) => {
+                const inputType = singleOrMultiSelect === 'single_choice' ? 'radio' : 'checkbox'
+                const singleOrMultiSelectString = `<div class="choice-option"><input type=${inputType} id=surveyQuestionMultipleChoice${idx} name="choice" value="${option}">
+                <label for=surveyQuestionMultipleChoice${idx}>${option}</label></div>`
+            return singleOrMultiSelectString
+        }).join(' ')}
+            </div>
+            <div class="bottom-section">
+            <div class="buttons">
+                <button class="form-submit" type="submit">${survey.appearance?.submitButtonText || 'Submit'}</button>
+            </div>
+            <div class="footer-branding"><div>powered by ${posthogLogo} PostHog</div></div>
+        </div>
+
+        </div>
+        `
+        const formElement = Object.assign(document.createElement('form'), {
+            className: `survey-${survey.id}-form`,
+            innerHTML: form,
+            onsubmit: (e) => {
+                e.preventDefault()
+                const selectedChoices = singleOrMultiSelect === 'single_choice' ? e.target.querySelector('input[type=radio]:checked').value : [...e.target.querySelectorAll('input[type=checkbox]:checked')].map((choice) => choice.value)
+                posthog.capture('survey sent', {
+                    $survey_name: survey.name,
+                    $survey_id: survey.id,
+                    $survey_question: survey.question,
+                    $survey_response: selectedChoices,
+                    sessionRecordingUrl: posthog.get_session_replay_url(),
+                })
+                closeSurveyPopup(survey.id, formElement)
+            }
+        })
+        return formElement
+    }
+
     const callSurveys = (posthog, forceReload = false) => {
         posthog?.getActiveMatchingSurveys((surveys) => {
-            const nonAPISurveys = surveys.filter(survey => survey.type !== 'api')
-            nonAPISurveys.forEach((survey) => {
-                if (document.querySelectorAll("div[class^='PostHogSurvey']").length === 0) {
-                    if (!localStorage.getItem(`seenSurvey_${survey.id}`)) {
-                        const shadow = createShadow(style(survey.id, survey?.appearance), survey.id)
-                        let surveyPopup
-                        const surveyQuestionType = survey.questions[0].type
-                        if (surveyQuestionType === 'rating') {
-                            surveyPopup = createRatingsPopup(survey)
-                        } else if (surveyQuestionType === 'open' || surveyQuestionType === 'link') {
-                            surveyPopup = createSurveyPopup(survey)
-                        }
-                        addCancelListeners(surveyPopup, survey.id, survey.name)
-                        shadow.appendChild(surveyPopup)
+        const nonAPISurveys = surveys.filter(survey => survey.type !== 'api')
+        nonAPISurveys.forEach((survey) => {
+            if (document.querySelectorAll("div[class^='PostHogSurvey']").length === 0) {
+                if (!localStorage.getItem(`seenSurvey_${survey.id}`)) {
+                    const shadow = createShadow(style(survey.id, survey?.appearance), survey.id)
+                    let surveyPopup
+                    const surveyQuestionType = survey.questions[0].type
+                    if (surveyQuestionType === 'rating') {
+                        surveyPopup = createRatingsPopup(survey)
+                    } else if (surveyQuestionType === 'open' || surveyQuestionType === 'link') {
+                        surveyPopup = createSurveyPopup(survey)
+                    } else if (surveyQuestionType === 'single_choice' || surveyQuestionType === 'multiple_choice') {
+                        surveyPopup = createMultipleChoicePopup(survey)
+                    }
+                    addCancelListeners(surveyPopup, survey.id, survey.name)
+                    shadow.appendChild(surveyPopup)
 
                     window.dispatchEvent(new Event('PHSurveyShown'))
                     posthog.capture('survey shown', {
