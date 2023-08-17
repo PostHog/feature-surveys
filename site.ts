@@ -409,6 +409,17 @@ export function inject({ config, posthog }) {
         const nonAPISurveys = surveys.filter(survey => survey.type !== 'api')
         nonAPISurveys.forEach((survey) => {
             if (document.querySelectorAll("div[class^='PostHogSurvey']").length === 0) {
+                const surveyWaitPeriodInDays = survey.conditions?.seenSurveyWaitPeriodInDays
+                if (surveyWaitPeriodInDays) {
+                    const lastSeenSurveyDate = localStorage.getItem(`lastSeenSurveyDate`)
+                    const today = new Date()
+                    const diff = Math.abs(today.getTime() - new Date(lastSeenSurveyDate).getTime())
+                    const diffDaysFromToday = Math.ceil(diff / (1000 * 3600 * 24))
+                    if (diffDaysFromToday < surveyWaitPeriodInDays) {
+                        return
+                    }
+                }
+
                 if (!localStorage.getItem(`seenSurvey_${survey.id}`)) {
                     const shadow = createShadow(style(survey.id, survey?.appearance), survey.id)
                     let surveyPopup
@@ -429,6 +440,7 @@ export function inject({ config, posthog }) {
                         $survey_id: survey.id,
                         sessionRecordingUrl: posthog.get_session_replay_url(),
                     })
+                    localStorage.setItem(`lastSeenSurveyDate`, new Date().toISOString())
                 }
             }
         })
