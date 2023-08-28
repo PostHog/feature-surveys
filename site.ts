@@ -432,6 +432,9 @@ export function inject({ config, posthog }) {
                         surveyPopup = createMultipleChoicePopup(survey)
                     }
                     addCancelListeners(surveyPopup, survey.id, survey.name)
+                    if (survey.appearance?.whiteLabel) {
+                        surveyPopup.getElementsByClassName('footer-branding')[0].style.display = 'none'
+                    }
                     shadow.appendChild(surveyPopup)
 
                     window.dispatchEvent(new Event('PHSurveyShown'))
