@@ -194,7 +194,33 @@ const style = (id, appearance) => `
         width: 100%;
         cursor: pointer;
     }
-`
+    .thank-you-message {
+        position: fixed;
+        bottom: 8vh;
+        right: 20px;
+        border-radius: 8px;
+        z-index: ${parseInt(appearance?.zIndex) || 99999};
+        box-shadow: -6px 0 16px -8px rgb(0 0 0 / 8%), -9px 0 28px 0 rgb(0 0 0 / 5%), -12px 0 48px 16px rgb(0 0 0 / 3%);
+        font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", "Roboto", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+    }
+    .thank-you-message-container {
+        background: ${appearance?.backgroundColor || 'white'};
+        border: 1px solid #f0f0f0;
+        border-radius: 8px;
+        padding: 12px 18px;
+        text-align: center;
+        max-width: 320px;
+        min-width: 150px;
+    }
+    .thank-you-message {
+        color: ${appearance?.textColor || 'black'};
+    }
+    .thank-you-message-body {
+        padding-bottom: 8px;
+        font-size: 14px;
+        color: ${appearance?.descriptionTextColor || '#4b4b52'};
+    }
+    `
 
 export function inject({ config, posthog }) {
     if (config.domains) {
@@ -225,6 +251,21 @@ export function inject({ config, posthog }) {
             window.dispatchEvent(new Event('PHSurveyClosed'))
         }, 2000)
         surveyPopup.reset()
+    }
+
+    const createThankYouMessage = (survey) => {
+        const thankYouHTML = `
+        <div class="thank-you-message-container">
+            <h3 class="thank-you-message-header">${survey.appearance?.thankYouMessageHeader || 'Thank you!'}</h3>
+            <div class="thank-you-message-body">${survey.appearance?.thankYouMessageDescription || ''}</div>
+            <div class="footer-branding"><div>powered by ${posthogLogo} PostHog</div></div>
+        </div>
+        `
+        const thankYouElement = Object.assign(document.createElement('div'), {
+            className: `thank-you-message`,
+            innerHTML: thankYouHTML,
+        })
+        return thankYouElement
     }
 
     const createSurveyPopup = (survey) => {
@@ -265,6 +306,9 @@ export function inject({ config, posthog }) {
                 if (surveyQuestionType === 'link') {
                     window.open(survey.questions[0].link)
                 }
+                window.setTimeout(() => {
+                    window.dispatchEvent(new Event('PHSurveySent'))
+                }, 200)
                 closeSurveyPopup(survey.id, formElement)
             }
         })
@@ -349,6 +393,9 @@ export function inject({ config, posthog }) {
                     $survey_response: parseInt(e.currentTarget.value),
                     sessionRecordingUrl: posthog.get_session_replay_url(),
                 })
+                window.setTimeout(() => {
+                    window.dispatchEvent(new Event('PHSurveySent'))
+                }, 200)
                 closeSurveyPopup(survey.id, formElement)
             })
         }
@@ -444,6 +491,15 @@ export function inject({ config, posthog }) {
                         sessionRecordingUrl: posthog.get_session_replay_url(),
                     })
                     localStorage.setItem(`lastSeenSurveyDate`, new Date().toISOString())
+                    if (survey.appearance?.displayThankYouMessage) {
+                        window.addEventListener('PHSurveySent', () => {
+                            const thankYouElement = createThankYouMessage(survey)
+                            shadow.appendChild(thankYouElement)
+                            window.setTimeout(() => {
+                                thankYouElement.remove()
+                            }, 2000)
+                        })
+                    }
                 }
             }
         })
