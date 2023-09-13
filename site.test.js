@@ -4,7 +4,6 @@ describe('my test suite', () => {
     afterEach(() => {
         // we have to manually reset the DOM after each test
         document.getElementsByTagName('html')[0].innerHTML = ''; 
-
     })
 
     test('createShadow', () => {
@@ -14,13 +13,14 @@ describe('my test suite', () => {
         expect(mockShadow.host.className).toBe(`PostHogSurvey${surveyId}`)
     });
 
-    test('does not show survey to user if they have dismissed it before', async () => {
-        const mockSurveys = [{ id: 'testSurvey1', name: 'Test survey 1', appearance: null, questions: [{ question: 'How satisfied are you with our newest product?', description: 'This is a question description', type: 'rating', display: 'number', scale: 10, lower_bound_label: 'Not Satisfied', upper_bound_label: 'Very Satisfied' }] }]
-        const mockPostHog = {
-            getActiveMatchingSurveys: jest.fn().mockImplementation((callback) => callback(mockSurveys)),
-            get_session_replay_url: jest.fn(),
-            capture: jest.fn().mockImplementation((eventName) => eventName),
-        }
+    const mockSurveys = [{ id: 'testSurvey1', name: 'Test survey 1', appearance: null, questions: [{ question: 'How satisfied are you with our newest product?', description: 'This is a question description', type: 'rating', display: 'number', scale: 10, lower_bound_label: 'Not Satisfied', upper_bound_label: 'Very Satisfied' }] }]
+    const mockPostHog = {
+        getActiveMatchingSurveys: jest.fn().mockImplementation((callback) => callback(mockSurveys)),
+        get_session_replay_url: jest.fn(),
+        capture: jest.fn().mockImplementation((eventName) => eventName),
+    }
+
+    test('does not show survey to user if they have dismissed it before', () => {
         expect(localStorage.getItem(`seenSurvey_${mockSurveys[0].id}`)).toBe(null)
         callSurveys(mockPostHog, false)
         expect(mockPostHog.capture).toBeCalledTimes(1)

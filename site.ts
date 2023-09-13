@@ -388,7 +388,6 @@ export const createSurveyPopup = (posthog, survey) => {
 
 export const addCancelListeners = (posthog, surveyPopup, surveyId, surveyEventName) => {
     const cancelButton = surveyPopup.getElementsByClassName('form-cancel')?.[0] as HTMLButtonElement
-    console.log('is it listening?', cancelButton)
     cancelButton.addEventListener('click', (e) => {
         e.preventDefault()
         Object.assign(surveyPopup.style, { display: 'none' })
