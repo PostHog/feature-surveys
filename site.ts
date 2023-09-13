@@ -300,7 +300,6 @@ export const callSurveys = (posthog, forceReload = false) => {
                         surveyPopup.getElementsByClassName('footer-branding')[0].style.display = 'none'
                     }
                     shadow.appendChild(surveyPopup)
-
                     window.dispatchEvent(new Event('PHSurveyShown'))
                     posthog.capture('survey shown', {
                         $survey_name: survey.name,
@@ -398,7 +397,7 @@ export const createSurveyPopup = (posthog, survey) => {
 
 export const addCancelListeners = (posthog, surveyPopup, surveyId, surveyEventName) => {
     const cancelButton = surveyPopup.getElementsByClassName('form-cancel')?.[0] as HTMLButtonElement
-
+    console.log('is it listening?', cancelButton)
     cancelButton.addEventListener('click', (e) => {
         e.preventDefault()
         Object.assign(surveyPopup.style, { display: 'none' })
