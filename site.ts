@@ -327,7 +327,7 @@ export const createThankYouMessage = (survey) => {
     <div class="thank-you-message-container">
         <h3 class="thank-you-message-header">${survey.appearance?.thankYouMessageHeader || 'Thank you!'}</h3>
         <div class="thank-you-message-body">${survey.appearance?.thankYouMessageDescription || ''}</div>
-        <div class="footer-branding"><div>powered by ${posthogLogo} PostHog</div></div>
+        ${survey.appearance?.whiteLabel ? '' : `<div class="footer-branding"><div>powered by ${posthogLogo} PostHog</div></div>`}
     </div>
     `
     const thankYouElement = Object.assign(document.createElement('div'), {
@@ -439,8 +439,8 @@ export const createRatingsPopup = (posthog, survey) => {
             <div class="rating-options">
             </div>
             <div class="rating-text">
-            <div>${survey.questions[0].lowerBoundLabel}</div>
-            <div>${survey.questions[0].upperBoundLabel}</div>
+            <div>${survey.questions[0].lowerBoundLabel || ''}</div>
+            <div>${survey.questions[0].upperBoundLabel || ''}</div>
             </div>
             <div class="footer-branding"><div>powered by ${posthogLogo} PostHog</div></div>
         </div>
