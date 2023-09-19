@@ -115,12 +115,9 @@ const style = (id, appearance) => `
         flex-direction: column;
     }
     .survey-question {
-        padding-top: 4px;
-        padding-bottom: 4px;
         font-weight: 500;
         color: ${appearance?.textColor || 'black'};
         font-size: 14px;
-        margin-bottom: 5px;
     }
     .question-textarea-wrapper {
         display: flex;
@@ -129,6 +126,7 @@ const style = (id, appearance) => `
     .description {
         font-size: 13px;
         color: ${appearance?.descriptionTextColor || '#4b4b52'};
+        margin-top: 5px;
     }
     .ratings-number {
         background-color: ${appearance?.ratingButtonColor || '#e0e2e8'};
@@ -169,11 +167,11 @@ const style = (id, appearance) => `
     .ratings-emoji:hover {
         cursor: pointer;
     }
+    .ratings-emoji.rating-active svg {
+        fill: ${appearance?.ratingButtonActiveColor || 'coral'};
+    }
     .emoji-svg {
         fill: ${appearance?.ratingButtonColor || 'black'};
-    }
-    .emoji-svg:hover {
-        fill: ${appearance?.ratingButtonHoverColor || 'coral'};
     }
     .rating-text {
         display: flex;
@@ -182,9 +180,6 @@ const style = (id, appearance) => `
         justify-content: space-between;
         margin-top: 6px;
         color: #4b4b52;
-    }
-    .rating-section {
-        margin-bottom: .5rem;
     }
     .multiple-choice-options {
         margin-bottom: .5rem;
@@ -462,10 +457,14 @@ export const createRatingsPopup = (posthog, survey) => {
         <div class="rating-section">
             <div class="rating-options">
             </div>
-            <div class="rating-text">
+            ${
+              survey.questions[0].lowerBoundLabel || survey.questions[0].upperBoundLabel
+                ? `<div class="rating-text">
             <div>${survey.questions[0].lowerBoundLabel || ''}</div>
             <div>${survey.questions[0].upperBoundLabel || ''}</div>
-            </div>
+            </div>`
+                : ''
+            }
             <div class="bottom-section">
             <div class="buttons">
                 <button class="form-submit" type="submit">${survey.appearance?.submitButtonText || 'Submit'}</button>
