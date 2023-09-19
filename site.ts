@@ -133,32 +133,38 @@ const style = (id, appearance) => `
     .ratings-number {
         background-color: ${appearance?.ratingButtonColor || '#e0e2e8'};
         font-size: 14px;
-        border-radius: 6px;
-        border: 1px solid ${appearance?.ratingButtonColor || '#e0e2e8'};
-        padding: 8px;
+        padding: 8px 0px;
+        border: none;
     }
     .ratings-number:hover {
         cursor: pointer;
-        filter: brightness(1.1);
     }
     .rating-options {
-        margin-top: .5rem;
+        margin-top: 14px;
     }
     .rating-options-buttons {
-        display: flex;
-        justify-content: space-evenly;
+        display: grid;
+        border-radius: 6px;
+        overflow: hidden;
+        border: 1px solid ${appearance.borderColor};
     }
-    .max-numbers {
-        min-width: 280px;
+    .rating-options-buttons > .ratings-number {
+        border-right: 1px solid ${appearance.borderColor};
+    }
+    .rating-options-buttons > .ratings-number:last-of-type {
+        border-right: 0px;
+    }
+    .rating-options-buttons .rating-active {
+        background: ${appearance.ratingButtonActiveColor};
     }
     .rating-options-emoji {
-        display: flex;
-        justify-content: space-evenly;
+        display: grid;
     }
     .ratings-emoji {
         font-size: 16px;
         background-color: transparent;
         border: none;
+        padding: 0px;
     }
     .ratings-emoji:hover {
         cursor: pointer;
@@ -172,10 +178,9 @@ const style = (id, appearance) => `
     .rating-text {
         display: flex;
         flex-direction: row;
-        font-size: 12px;
+        font-size: 11px;
         justify-content: space-between;
-        margin-top: .5rem;
-        margin-bottom: .5rem;
+        margin-top: 6px;
         color: #4b4b52;
     }
     .rating-section {
@@ -308,6 +313,7 @@ export const callSurveys = (posthog, forceReload = false) => {
             surveyPopup.getElementsByClassName('footer-branding')[0].style.display = 'none'
           }
           shadow.appendChild(surveyPopup)
+          setTextColors(shadow)
           window.dispatchEvent(new Event('PHSurveyShown'))
           posthog.capture('survey shown', {
             $survey_name: survey.name,
@@ -376,6 +382,7 @@ export const createSurveyPopup = (posthog, survey) => {
         </div>
     </div>
 `
+
   const formElement = Object.assign(document.createElement('form'), {
     className: `survey-${survey.id}-form`,
     innerHTML: form,
@@ -422,10 +429,10 @@ export const createRatingsPopup = (posthog, survey) => {
   const displayType = survey.questions[0].display
   let ratingOptionsElement = document.createElement('div')
   if (displayType === 'number') {
-    ratingOptionsElement.className = `rating-options-buttons ${scale === 10 ? 'max-numbers' : ''}`
+    ratingOptionsElement.className = 'rating-options-buttons'
     for (let i = 1; i <= scale; i++) {
       const buttonElement = document.createElement('button')
-      buttonElement.className = `ratings-number rating_${i}`
+      buttonElement.className = `ratings-number rating_${i} auto-text-color`
       buttonElement.type = 'submit'
       buttonElement.value = `${i}`
       buttonElement.innerHTML = `${i}`
@@ -444,6 +451,7 @@ export const createRatingsPopup = (posthog, survey) => {
       ratingOptionsElement.append(emojiElement)
     }
   }
+  ratingOptionsElement.style.gridTemplateColumns = `repeat(${scale}, minmax(0, 1fr))`
   const ratingsForm = `
     <div class="survey-${survey.id}-box">
         <div class="cancel-btn-wrapper">
@@ -458,29 +466,45 @@ export const createRatingsPopup = (posthog, survey) => {
             <div>${survey.questions[0].lowerBoundLabel || ''}</div>
             <div>${survey.questions[0].upperBoundLabel || ''}</div>
             </div>
+            <div class="bottom-section">
+            <div class="buttons">
+                <button class="form-submit" type="submit">${survey.appearance?.submitButtonText || 'Submit'}</button>
+            </div>
             <div class="footer-branding"><div>powered by ${posthogLogo} PostHog</div></div>
+        </div>
         </div>
     </div>
             `
   const formElement = Object.assign(document.createElement('form'), {
     className: `survey-${survey.id}-form`,
-    innerHTML: ratingsForm
-  })
-  formElement.getElementsByClassName('rating-options')[0].insertAdjacentElement('afterbegin', ratingOptionsElement)
-  for (const x of Array(survey.questions[0].scale).keys()) {
-    formElement.getElementsByClassName(`rating_${x + 1}`)[0].addEventListener('click', (e) => {
+    innerHTML: ratingsForm,
+    onsubmit: (e) => {
       e.preventDefault()
+      const activeRatingEl = formElement.querySelector('.rating-active')
       posthog.capture('survey sent', {
         $survey_name: survey.name,
         $survey_id: survey.id,
         $survey_question: survey.questions[0].question,
-        $survey_response: parseInt(e.currentTarget?.value),
+        $survey_response: parseInt(activeRatingEl.value),
         sessionRecordingUrl: posthog.get_session_replay_url?.()
       })
       window.setTimeout(() => {
         window.dispatchEvent(new Event('PHSurveySent'))
       }, 200)
       closeSurveyPopup(survey.id, formElement)
+    }
+  })
+
+  formElement.getElementsByClassName('rating-options')[0].insertAdjacentElement('afterbegin', ratingOptionsElement)
+  for (const x of Array(survey.questions[0].scale).keys()) {
+    const ratingEl = formElement.getElementsByClassName(`rating_${x + 1}`)[0]
+    ratingEl.addEventListener('click', (e) => {
+      e.preventDefault()
+      for (const activeRatingEl of formElement.getElementsByClassName('rating-active')) {
+        activeRatingEl.classList.remove('rating-active')
+      }
+      ratingEl.classList.add('rating-active')
+      setTextColors(formElement)
     })
   }
 
@@ -535,4 +559,26 @@ export const createMultipleChoicePopup = (posthog, survey) => {
     }
   })
   return formElement
+}
+
+function getTextColor(el) {
+  const backgroundColor = window.getComputedStyle(el).backgroundColor
+  if (backgroundColor === 'rgba(0, 0, 0, 0)') {
+    return 'black'
+  }
+  let r, g, b, hsp
+  const colorMatch = backgroundColor.match(/^rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*(\d+(?:\.\d+)?))?\)$/)
+  if (!colorMatch) return 'black'
+
+  r = parseInt(colorMatch[1])
+  g = parseInt(colorMatch[2])
+  b = parseInt(colorMatch[3])
+  hsp = Math.sqrt(0.299 * (r * r) + 0.587 * (g * g) + 0.114 * (b * b))
+  return hsp > 127.5 ? 'black' : 'white'
+}
+
+function setTextColors(parentEl) {
+  for (const el of parentEl.querySelectorAll('.auto-text-color')) {
+    el.style.color = getTextColor(el)
+  }
 }
