@@ -52,6 +52,8 @@ describe('survey display logic', () => {
         expect(mockPostHog.capture).toBeCalledWith('survey shown', {$survey_id: "testSurvey1", $survey_name: "Test survey 1", sessionRecordingUrl: undefined })
 
         // submit the survey
+        const ratingButton = document.getElementsByClassName(`PostHogSurvey${mockSurveys[0].id}`)[0].shadowRoot.querySelectorAll('.rating_1')[0]
+        ratingButton.click()
         const submitButton = document.getElementsByClassName(`PostHogSurvey${mockSurveys[0].id}`)[0].shadowRoot.querySelectorAll('.form-submit')[0]
         submitButton.click()
         expect(mockPostHog.capture).toBeCalledTimes(2)
