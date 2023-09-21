@@ -19,7 +19,7 @@ const style = (id, appearance) => `
         text-align: left;
         max-width: ${parseInt(appearance?.maxWidth) || 290}px;
         z-index: ${parseInt(appearance?.zIndex) || 99999};
-        border: 1px solid ${appearance?.borderColor};
+        border: 1px solid ${appearance?.borderColor || '#c9c6c6'};
         border-bottom: 0px;
         width: 100%;
     }
@@ -30,7 +30,7 @@ const style = (id, appearance) => `
     }
     .survey-${id}-form {
         flex-direction: column;
-        background: ${appearance?.backgroundColor || 'white'};
+        background: ${appearance?.backgroundColor || '#e6e6e6'};
         border-top-left-radius: 10px;
         border-top-right-radius: 10px;
         box-shadow: -6px 0 16px -8px rgb(0 0 0 / 8%), -9px 0 28px 0 rgb(0 0 0 / 5%), -12px 0 48px 16px rgb(0 0 0 / 3%);
@@ -46,7 +46,7 @@ const style = (id, appearance) => `
         padding-right: 10px;
         padding-top: 10px;
         border-radius: 6px;
-        border-color: ${appearance?.borderColor};
+        border-color: ${appearance?.borderColor || '#c9c6c6'};
         margin-top: 14px; 
     }
     .form-submit {
@@ -68,7 +68,7 @@ const style = (id, appearance) => `
         font-size: 14px;
         border-radius: 6px;
         outline: 0;
-        background: ${appearance?.submitButtonColor || '#2C2C2C'} !important;
+        background: ${appearance?.submitButtonColor || 'black'} !important;
         text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.12);
         box-shadow: 0 2px 0 rgba(0, 0, 0, 0.045);
         width: 100%;
@@ -88,7 +88,7 @@ const style = (id, appearance) => `
         right: 0;
         transform: translate(50%, -50%);
         background: white;
-        border: 1px solid ${appearance?.borderColor};
+        border: 1px solid ${appearance?.borderColor || '#c9c6c6'};
         display: flex;
         justify-content: center;
         align-items: center;
@@ -106,8 +106,9 @@ const style = (id, appearance) => `
         justify-content: center;
         gap: 4px;
         align-items: center;
-        font-weight: 600;
-        background: ${appearance?.backgroundColor};
+        font-weight: 500;
+        background: ${appearance?.backgroundColor || '#e6e6e6'};
+        text-decoration: none;
     }
     .survey-${id}-box {
         padding: 20px 25px 10px;
@@ -117,7 +118,7 @@ const style = (id, appearance) => `
     .survey-question {
         font-weight: 500;
         font-size: 14px;
-        background: ${appearance?.backgroundColor};
+        background: ${appearance?.backgroundColor || '#e6e6e6'};
     }
     .question-textarea-wrapper {
         display: flex;
@@ -127,10 +128,10 @@ const style = (id, appearance) => `
         font-size: 13px;
         margin-top: 5px;
         opacity: .40;
-        background: ${appearance?.backgroundColor};
+        background: ${appearance?.backgroundColor || '#e6e6e6'};
     }
     .ratings-number {
-        background-color: ${appearance?.ratingButtonColor || '#e0e2e8'};
+        background-color: ${appearance?.ratingButtonColor || 'white'};
         font-size: 14px;
         padding: 8px 0px;
         border: none;
@@ -145,16 +146,16 @@ const style = (id, appearance) => `
         display: grid;
         border-radius: 6px;
         overflow: hidden;
-        border: 1px solid ${appearance.borderColor};
+        border: 1px solid ${appearance.borderColor || '#c9c6c6'};
     }
     .rating-options-buttons > .ratings-number {
-        border-right: 1px solid ${appearance.borderColor};
+        border-right: 1px solid ${appearance.borderColor || '#c9c6c6'};
     }
     .rating-options-buttons > .ratings-number:last-of-type {
         border-right: 0px;
     }
     .rating-options-buttons .rating-active {
-        background: ${appearance.ratingButtonActiveColor};
+        background: ${appearance.ratingButtonActiveColor || 'black'};
     }
     .rating-options-emoji {
         display: grid;
@@ -169,10 +170,10 @@ const style = (id, appearance) => `
         cursor: pointer;
     }
     .ratings-emoji.rating-active svg {
-        fill: ${appearance?.ratingButtonActiveColor || 'coral'};
+        fill: ${appearance?.ratingButtonActiveColor || 'black'};
     }
     .emoji-svg {
-        fill: ${appearance?.ratingButtonColor || 'black'};
+        fill: ${appearance?.ratingButtonColor || 'white'};
     }
     .rating-text {
         display: flex;
@@ -180,7 +181,7 @@ const style = (id, appearance) => `
         font-size: 11px;
         justify-content: space-between;
         margin-top: 6px;
-        background: ${appearance?.backgroundColor};
+        background: ${appearance?.backgroundColor || '#e6e6e6'};
         opacity: .40;
     }
     .multiple-choice-options {
@@ -208,7 +209,7 @@ const style = (id, appearance) => `
     .choice-check {
         position: absolute;
         right: 10px;
-        background: ${appearance.choiceButtonColor};
+        background: white;
     }
     .choice-check svg {
         display: none;
@@ -233,7 +234,7 @@ const style = (id, appearance) => `
         padding: 10px;
         border: 1px solid rgba(0,0,0,.25);
         border-radius: 4px;
-        background: ${appearance.choiceButtonColor};
+        background: white;
     }
     .thank-you-message {
         position: fixed;
@@ -245,8 +246,8 @@ const style = (id, appearance) => `
         border-top-left-radius: 10px;
         border-top-right-radius: 10px;
         padding: 20px 25px 10px;
-        background: ${appearance?.backgroundColor || 'white'};
-        border: 1px solid ${appearance?.borderColor};
+        background: ${appearance?.backgroundColor || '#e6e6e6'};
+        border: 1px solid ${appearance?.borderColor || '#c9c6c6'};
         text-align: center;
         max-width: ${parseInt(appearance?.maxWidth) || 290}px;
         min-width: 150px;
@@ -375,7 +376,7 @@ export const createThankYouMessage = (survey) => {
     <div class="thank-you-message-container">
         <h3 class="thank-you-message-header">${survey.appearance?.thankYouMessageHeader || 'Thank you!'}</h3>
         <div class="thank-you-message-body">${survey.appearance?.thankYouMessageDescription || ''}</div>
-        ${survey.appearance?.whiteLabel ? '' : `<div class="footer-branding auto-text-color">Survey by ${posthogLogo}</div>`}
+        ${survey.appearance?.whiteLabel ? '' : `<a href="https://posthog.com" target="_blank" rel="noopener" class="footer-branding auto-text-color">Survey by ${posthogLogo}</a>`}
     </div>
     `
   const thankYouElement = Object.assign(document.createElement('div'), {
@@ -403,7 +404,7 @@ export const createSurveyPopup = (posthog, survey) => {
             <div class="buttons">
                 <button class="form-submit auto-text-color" type="submit">${survey.appearance?.submitButtonText || 'Submit'}</button>
             </div>
-            <div class="footer-branding auto-text-color">Survey by ${posthogLogo}</div>
+            <a href="https://posthog.com" target="_blank" rel="noopener" class="footer-branding auto-text-color">Survey by ${posthogLogo}</a>
         </div>
     </div>
 `
@@ -499,7 +500,7 @@ export const createRatingsPopup = (posthog, survey) => {
             <div class="buttons">
                 <button class="form-submit auto-text-color" type="submit">${survey.appearance?.submitButtonText || 'Submit'}</button>
             </div>
-            <div class="footer-branding auto-text-color">Survey by ${posthogLogo}</div>
+            <a href="https://posthog.com" target="_blank" rel="noopener" class="footer-branding auto-text-color">Survey by ${posthogLogo}</a>
         </div>
         </div>
     </div>
@@ -566,7 +567,7 @@ export const createMultipleChoicePopup = (posthog, survey) => {
         <div class="buttons">
             <button class="form-submit auto-text-color" type="submit">${survey.appearance?.submitButtonText || 'Submit'}</button>
         </div>
-        <div class="footer-branding auto-text-color">Survey by ${posthogLogo}</div>
+        <a href="https://posthog.com" target="_blank" rel="noopener" class="footer-branding auto-text-color">Survey by ${posthogLogo}</a>
     </div>
 
     </div>
