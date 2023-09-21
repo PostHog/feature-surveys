@@ -30,7 +30,7 @@ const style = (id, appearance) => `
     }
     .survey-${id}-form {
         flex-direction: column;
-        background: ${appearance?.backgroundColor || '#e6e6e6'};
+        background: ${appearance?.backgroundColor || '#eeeded'};
         border-top-left-radius: 10px;
         border-top-right-radius: 10px;
         box-shadow: -6px 0 16px -8px rgb(0 0 0 / 8%), -9px 0 28px 0 rgb(0 0 0 / 5%), -12px 0 48px 16px rgb(0 0 0 / 3%);
@@ -107,7 +107,7 @@ const style = (id, appearance) => `
         gap: 4px;
         align-items: center;
         font-weight: 500;
-        background: ${appearance?.backgroundColor || '#e6e6e6'};
+        background: ${appearance?.backgroundColor || '#eeeded'};
         text-decoration: none;
     }
     .survey-${id}-box {
@@ -118,7 +118,7 @@ const style = (id, appearance) => `
     .survey-question {
         font-weight: 500;
         font-size: 14px;
-        background: ${appearance?.backgroundColor || '#e6e6e6'};
+        background: ${appearance?.backgroundColor || '#eeeded'};
     }
     .question-textarea-wrapper {
         display: flex;
@@ -128,7 +128,7 @@ const style = (id, appearance) => `
         font-size: 13px;
         margin-top: 5px;
         opacity: .40;
-        background: ${appearance?.backgroundColor || '#e6e6e6'};
+        background: ${appearance?.backgroundColor || '#eeeded'};
     }
     .ratings-number {
         background-color: ${appearance?.ratingButtonColor || 'white'};
@@ -181,7 +181,7 @@ const style = (id, appearance) => `
         font-size: 11px;
         justify-content: space-between;
         margin-top: 6px;
-        background: ${appearance?.backgroundColor || '#e6e6e6'};
+        background: ${appearance?.backgroundColor || '#eeeded'};
         opacity: .40;
     }
     .multiple-choice-options {
@@ -246,7 +246,7 @@ const style = (id, appearance) => `
         border-top-left-radius: 10px;
         border-top-right-radius: 10px;
         padding: 20px 25px 10px;
-        background: ${appearance?.backgroundColor || '#e6e6e6'};
+        background: ${appearance?.backgroundColor || '#eeeded'};
         border: 1px solid ${appearance?.borderColor || '#c9c6c6'};
         text-align: center;
         max-width: ${parseInt(appearance?.maxWidth) || 290}px;
