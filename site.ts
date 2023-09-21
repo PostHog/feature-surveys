@@ -398,7 +398,7 @@ export const createSurveyPopup = (posthog, survey) => {
         <div class="question-textarea-wrapper">
             <div class="survey-question auto-text-color">${question}</div>
             ${surveyDescription ? `<span class="description auto-text-color">${surveyDescription}</span>` : ''}
-            ${surveyQuestionType === 'open' ? `<textarea class="survey-textarea" name="survey" rows=4 placeholder="${survey.appearance?.placeholder}"></textarea>` : ''}
+            ${surveyQuestionType === 'open' ? `<textarea class="survey-textarea" name="survey" rows=4 placeholder="${survey.appearance?.placeholder || ''}"></textarea>` : ''}
         </div>
         <div class="bottom-section">
             <div class="buttons">
