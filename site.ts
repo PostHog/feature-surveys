@@ -127,7 +127,7 @@ const style = (id, appearance) => `
     .description {
         font-size: 13px;
         margin-top: 5px;
-        opacity: .40;
+        opacity: .60;
         background: ${appearance?.backgroundColor || '#eeeded'};
     }
     .ratings-number {
@@ -182,7 +182,7 @@ const style = (id, appearance) => `
         justify-content: space-between;
         margin-top: 6px;
         background: ${appearance?.backgroundColor || '#eeeded'};
-        opacity: .40;
+        opacity: .60;
     }
     .multiple-choice-options {
         margin-top: 13px;
