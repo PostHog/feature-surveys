@@ -158,7 +158,8 @@ const style = (id, appearance) => `
         background: ${appearance?.ratingButtonActiveColor || 'black'};
     }
     .rating-options-emoji {
-        display: grid;
+        display: flex;
+        justify-content: space-between;
     }
     .ratings-emoji {
         font-size: 16px;
@@ -456,6 +457,7 @@ export const createRatingsPopup = (posthog, survey) => {
   let ratingOptionsElement = document.createElement('div')
   if (displayType === 'number') {
     ratingOptionsElement.className = 'rating-options-buttons'
+    ratingOptionsElement.style.gridTemplateColumns = `repeat(${scale}, minmax(0, 1fr))`
     for (let i = 1; i <= scale; i++) {
       const buttonElement = document.createElement('button')
       buttonElement.className = `ratings-number rating_${i} auto-text-color`
@@ -477,7 +479,6 @@ export const createRatingsPopup = (posthog, survey) => {
       ratingOptionsElement.append(emojiElement)
     }
   }
-  ratingOptionsElement.style.gridTemplateColumns = `repeat(${scale}, minmax(0, 1fr))`
   const ratingsForm = `
     <div class="survey-${survey.id}-box">
         <div class="cancel-btn-wrapper">
