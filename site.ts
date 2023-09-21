@@ -258,13 +258,16 @@ const style = (id, appearance) => `
         color: ${appearance?.textColor || 'black'};
     }
     .thank-you-message-body {
-        margin-bottom: 14px;
+        margin-top: 6px;
         font-size: 14px;
         color: ${appearance?.descriptionTextColor || '#4b4b52'};
     }
     .thank-you-message-header {
-        margin: 0px;
-        margin-bottom: 14px;
+        margin: 10px 0px 0px;
+    }
+    .thank-you-message-container .form-submit {
+        margin-top: 20px;
+        margin-bottom: 10px;
     }
     .bottom-section {
         margin-top: 14px;
@@ -352,9 +355,13 @@ export const callSurveys = (posthog, forceReload = false) => {
             window.addEventListener('PHSurveySent', () => {
               const thankYouElement = createThankYouMessage(survey)
               shadow.appendChild(thankYouElement)
-              window.setTimeout(() => {
-                thankYouElement.remove()
-              }, 2000)
+              const cancelButtons = thankYouElement.querySelectorAll('.form-cancel, .form-submit');
+              for (const button of cancelButtons) {
+                button.addEventListener('click', () => {
+                    thankYouElement.remove()
+                })
+              }
+              setTextColors(shadow)
             })
           }
         }
@@ -375,8 +382,12 @@ export const closeSurveyPopup = (surveyId: string, surveyPopup: HTMLFormElement)
 export const createThankYouMessage = (survey) => {
   const thankYouHTML = `
     <div class="thank-you-message-container">
+        <div class="cancel-btn-wrapper">
+            <button class="form-cancel" type="cancel">${cancelSVG}</button>
+        </div>
         <h3 class="thank-you-message-header">${survey.appearance?.thankYouMessageHeader || 'Thank you!'}</h3>
         <div class="thank-you-message-body">${survey.appearance?.thankYouMessageDescription || ''}</div>
+        <button class="form-submit auto-text-color">Close</button>
         ${survey.appearance?.whiteLabel ? '' : `<a href="https://posthog.com" target="_blank" rel="noopener" class="footer-branding auto-text-color">Survey by ${posthogLogo}</a>`}
     </div>
     `
