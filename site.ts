@@ -146,16 +146,16 @@ const style = (id, appearance) => `
         display: grid;
         border-radius: 6px;
         overflow: hidden;
-        border: 1px solid ${appearance.borderColor || '#c9c6c6'};
+        border: 1px solid ${appearance?.borderColor || '#c9c6c6'};
     }
     .rating-options-buttons > .ratings-number {
-        border-right: 1px solid ${appearance.borderColor || '#c9c6c6'};
+        border-right: 1px solid ${appearance?.borderColor || '#c9c6c6'};
     }
     .rating-options-buttons > .ratings-number:last-of-type {
         border-right: 0px;
     }
     .rating-options-buttons .rating-active {
-        background: ${appearance.ratingButtonActiveColor || 'black'};
+        background: ${appearance?.ratingButtonActiveColor || 'black'};
     }
     .rating-options-emoji {
         display: grid;
@@ -515,7 +515,7 @@ export const createRatingsPopup = (posthog, survey) => {
         $survey_name: survey.name,
         $survey_id: survey.id,
         $survey_question: survey.questions[0].question,
-        $survey_response: parseInt(activeRatingEl.value),
+        $survey_response: parseInt(activeRatingEl?.value),
         sessionRecordingUrl: posthog.get_session_replay_url?.()
       })
       window.setTimeout(() => {
@@ -585,6 +585,9 @@ export const createMultipleChoicePopup = (posthog, survey) => {
         $survey_response: selectedChoices,
         sessionRecordingUrl: posthog.get_session_replay_url?.()
       })
+      window.setTimeout(() => {
+        window.dispatchEvent(new Event('PHSurveySent'))
+      }, 200)
       closeSurveyPopup(survey.id, formElement)
     }
   })
