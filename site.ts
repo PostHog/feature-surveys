@@ -174,7 +174,7 @@ const style = (id, appearance) => `
         fill: ${appearance?.ratingButtonActiveColor || 'black'};
     }
     .emoji-svg {
-        fill: ${appearance?.ratingButtonColor || 'white'};
+        fill: ${appearance?.ratingButtonColor || '#c9c6c6'};
     }
     .rating-text {
         display: flex;
