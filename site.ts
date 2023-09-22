@@ -19,7 +19,7 @@ const style = (id, appearance) => `
         text-align: left;
         max-width: ${parseInt(appearance?.maxWidth) || 290}px;
         z-index: ${parseInt(appearance?.zIndex) || 99999};
-        border: 1px solid ${appearance?.borderColor || '#c9c6c6'};
+        border: 1.5px solid ${appearance?.borderColor || '#c9c6c6'};
         border-bottom: 0px;
         width: 100%;
     }
@@ -60,7 +60,7 @@ const style = (id, appearance) => `
         font-weight: 700;
         white-space: nowrap;
         text-align: center;
-        border: 1px solid transparent;
+        border: 1.5px solid transparent;
         cursor: pointer;
         user-select: none;
         touch-action: manipulation;
@@ -88,7 +88,7 @@ const style = (id, appearance) => `
         right: 0;
         transform: translate(50%, -50%);
         background: white;
-        border: 1px solid ${appearance?.borderColor || '#c9c6c6'};
+        border: 1.5px solid ${appearance?.borderColor || '#c9c6c6'};
         display: flex;
         justify-content: center;
         align-items: center;
@@ -146,7 +146,7 @@ const style = (id, appearance) => `
         display: grid;
         border-radius: 6px;
         overflow: hidden;
-        border: 1px solid ${appearance?.borderColor || '#c9c6c6'};
+        border: 1.5px solid ${appearance?.borderColor || '#c9c6c6'};
     }
     .rating-options-buttons > .ratings-number {
         border-right: 1px solid ${appearance?.borderColor || '#c9c6c6'};
@@ -227,13 +227,13 @@ const style = (id, appearance) => `
         font-weight: bold;
     }
     .multiple-choice-options input:checked + label {
-        border: 1px solid rgba(0,0,0);
+        border: 1.5px solid rgba(0,0,0);
     }
     .multiple-choice-options label {
         width: 100%;
         cursor: pointer;
         padding: 10px;
-        border: 1px solid rgba(0,0,0,.25);
+        border: 1.5px solid rgba(0,0,0,.25);
         border-radius: 4px;
         background: white;
     }
@@ -248,7 +248,7 @@ const style = (id, appearance) => `
         border-top-right-radius: 10px;
         padding: 20px 25px 10px;
         background: ${appearance?.backgroundColor || '#eeeded'};
-        border: 1px solid ${appearance?.borderColor || '#c9c6c6'};
+        border: 1.5px solid ${appearance?.borderColor || '#c9c6c6'};
         text-align: center;
         max-width: ${parseInt(appearance?.maxWidth) || 290}px;
         min-width: 150px;
