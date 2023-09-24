@@ -269,6 +269,9 @@ const style = (id, appearance) => `
         margin-top: 20px;
         margin-bottom: 10px;
     }
+    .thank-you-message-countdown {
+        margin-left: 6px;
+    }
     .bottom-section {
         margin-top: 14px;
     }
@@ -361,6 +364,20 @@ export const callSurveys = (posthog, forceReload = false) => {
                     thankYouElement.remove()
                 })
               }
+              const countdownEl = thankYouElement.querySelector('.thank-you-message-countdown');
+              if (countdownEl) {
+                let count = 3;
+                countdownEl.textContent = `(${count})`
+                const countdown = setInterval(() => {
+                  count -= 1;
+                  if (count <= 0) {
+                    clearInterval(countdown)
+                    thankYouElement.remove();
+                    return
+                  }
+                  countdownEl.textContent = `(${count})`
+                }, 1000)
+              }
               setTextColors(shadow)
             })
           }
@@ -387,7 +404,7 @@ export const createThankYouMessage = (survey) => {
         </div>
         <h3 class="thank-you-message-header">${survey.appearance?.thankYouMessageHeader || 'Thank you!'}</h3>
         <div class="thank-you-message-body">${survey.appearance?.thankYouMessageDescription || ''}</div>
-        <button class="form-submit auto-text-color">Close</button>
+        <button class="form-submit auto-text-color"><span>Close</span><span class="thank-you-message-countdown"></span></button>
         ${survey.appearance?.whiteLabel ? '' : `<a href="https://posthog.com" target="_blank" rel="noopener" class="footer-branding auto-text-color">Survey by ${posthogLogo}</a>`}
     </div>
     `
