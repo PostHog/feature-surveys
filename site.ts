@@ -230,7 +230,7 @@ export function inject({ config, posthog }) {
         }
     }
 
-    if (window?.generateSurveys) {
+    if (window?.extendPostHogWithSurveys) {
         // If posthog-js natively supports surveys, don't do anything with the app
         return
     }
@@ -264,7 +264,7 @@ export const createShadow = (styleSheet, surveyId) => {
 
 export const callSurveys = (posthog, forceReload = false) => {
 
-    if (window?.generateSurveys) {
+    if (window?.extendPostHogWithSurveys) {
         // If posthog-js natively supports surveys, don't do anything with the app
         return
     }
