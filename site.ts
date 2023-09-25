@@ -230,6 +230,11 @@ export function inject({ config, posthog }) {
         }
     }
 
+    if (window?.extendPostHogWithSurveys) {
+        // If posthog-js natively supports surveys, don't do anything with the app
+        return
+    }
+
     callSurveys(posthog, true)
 
     let currentUrl = location.href
@@ -258,6 +263,12 @@ export const createShadow = (styleSheet, surveyId) => {
 }
 
 export const callSurveys = (posthog, forceReload = false) => {
+
+    if (window?.extendPostHogWithSurveys) {
+        // If posthog-js natively supports surveys, don't do anything with the app
+        return
+    }
+    
     posthog?.getActiveMatchingSurveys((surveys) => {
         const nonAPISurveys = surveys.filter(survey => survey.type !== 'api')
         nonAPISurveys.forEach((survey) => {
