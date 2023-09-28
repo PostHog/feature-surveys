@@ -703,29 +703,36 @@ export const createMultipleQuestionSurvey = (posthog, survey) => {
         className: `survey-${survey.id}-form`,
         onsubmit: (e) => {
             e.preventDefault()
-            const multipleQuestionResponses = []
+            const multipleQuestionResponses = {}
             const allTabs = e.target.getElementsByClassName('tab')
+            let idx = 0
             for (const tab of allTabs) {
                 const classes = tab.classList
                 const questionType = classes[2]
+                let response
                 if (questionType === 'open') {
-                    multipleQuestionResponses.push(tab.querySelector('textarea').value)
+                    response = tab.querySelector('textarea').value
                 } else if (questionType === 'link') {
-                    multipleQuestionResponses.push('link clicked')
+                    response = 'link clicked'
                 } else if (questionType === 'rating') {
-                    multipleQuestionResponses.push(parseInt(tab.querySelector('.rating-active').value))
+                    response = parseInt(tab.querySelector('.rating-active').value)
                 } else if (questionType === 'single_choice' || questionType === 'multiple_choice') {
                     const selectedChoices = questionType === 'single_choice' ? tab.querySelector('input[type=radio]:checked').value : [...tab.querySelectorAll('input[type=checkbox]:checked')].map((choice) => choice.value)
-                    multipleQuestionResponses.push(selectedChoices)
+                    response = selectedChoices
                 }
+                if (idx === 0) {
+                    multipleQuestionResponses['$survey_response'] = response
+                } else {
+                    multipleQuestionResponses[`$survey_response_${idx}`] = response
+                }
+                idx++
             }
-
             posthog.capture('survey sent', {
                 $survey_name: survey.name,
                 $survey_id: survey.id,
                 $survey_questions: survey.questions,
-                $survey_response: multipleQuestionResponses,
-                sessionRecordingUrl: posthog.get_session_replay_url?.()
+                sessionRecordingUrl: posthog.get_session_replay_url?.(),
+                ...multipleQuestionResponses,
             })
             window.setTimeout(() => {
                 window.dispatchEvent(new Event('PHSurveySent'))
