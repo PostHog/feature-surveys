@@ -336,81 +336,80 @@ export const callSurveys = (posthog, forceReload = false) => {
         // If posthog-js natively supports surveys, don't do anything with the app
         return
     }
-
     posthog?.getActiveMatchingSurveys((surveys) => {
         const nonAPISurveys = surveys.filter(survey => survey.type !== 'api')
         nonAPISurveys.forEach((survey) => {
-            if (document.querySelectorAll("div[class^='PostHogSurvey']").length === 0) {
-                const surveyWaitPeriodInDays = survey.conditions?.seenSurveyWaitPeriodInDays
-                if (surveyWaitPeriodInDays) {
-                    const lastSeenSurveyDate = localStorage.getItem(`lastSeenSurveyDate`)
-                    const today = new Date()
-                    if (lastSeenSurveyDate) {
-                        const diff = Math.abs(today.getTime() - new Date(lastSeenSurveyDate).getTime())
-                        const diffDaysFromToday = Math.ceil(diff / (1000 * 3600 * 24))
-                        if (diffDaysFromToday < surveyWaitPeriodInDays) {
-                            return
-                        }
-                    }
-                }
-
-                if (!localStorage.getItem(`seenSurvey_${survey.id}`)) {
-                    const shadow = createShadow(style(survey.id, survey?.appearance), survey.id)
-                    let surveyPopup
-                    const surveyQuestionType = survey.questions[0].type
-                    if (surveyQuestionType === 'rating') {
-                        surveyPopup = createRatingsPopup(posthog, survey)
-                    } else if (surveyQuestionType === 'open' || surveyQuestionType === 'link') {
-                        surveyPopup = createSurveyPopup(posthog, survey)
-                    } else if (surveyQuestionType === 'single_choice' || surveyQuestionType === 'multiple_choice') {
-                        surveyPopup = createMultipleChoicePopup(posthog, survey)
-                    }
-                    addCancelListeners(posthog, surveyPopup, survey.id, survey.name)
-                    if (survey.appearance?.whiteLabel) {
-                        surveyPopup.getElementsByClassName('footer-branding')[0].style.display = 'none'
-                    }
-                    shadow.appendChild(surveyPopup)
-                    setTextColors(shadow)
-                    window.dispatchEvent(new Event('PHSurveyShown'))
-                    posthog.capture('survey shown', {
-                        $survey_name: survey.name,
-                        $survey_id: survey.id,
-                        sessionRecordingUrl: posthog.get_session_replay_url?.(),
-                    })
-                    localStorage.setItem(`lastSeenSurveyDate`, new Date().toISOString())
-                    if (survey.appearance?.displayThankYouMessage) {
-                        window.addEventListener('PHSurveySent', () => {
-                            const thankYouElement = createThankYouMessage(survey)
-                            shadow.appendChild(thankYouElement)
-                            const cancelButtons = thankYouElement.querySelectorAll('.form-cancel, .form-submit');
-                            for (const button of cancelButtons) {
-                                button.addEventListener('click', () => {
-                                    thankYouElement.remove()
-                                })
-                            }
-                            const countdownEl = thankYouElement.querySelector('.thank-you-message-countdown');
-                            if (countdownEl) {
-                                let count = 3;
-                                countdownEl.textContent = `(${count})`
-                                const countdown = setInterval(() => {
-                                    count -= 1;
-                                    if (count <= 0) {
-                                        clearInterval(countdown)
-                                        thankYouElement.remove();
-                                        return
-                                    }
-                                    countdownEl.textContent = `(${count})`
-                                }, 1000)
-                            }
-                            setTextColors(shadow)
-                        })
+        if (document.querySelectorAll("div[class^='PostHogSurvey']").length === 0) {
+            const surveyWaitPeriodInDays = survey.conditions?.seenSurveyWaitPeriodInDays
+            if (surveyWaitPeriodInDays) {
+                const lastSeenSurveyDate = localStorage.getItem(`lastSeenSurveyDate`)
+                const today = new Date()
+                if (lastSeenSurveyDate) {
+                    const diff = Math.abs(today.getTime() - new Date(lastSeenSurveyDate).getTime())
+                    const diffDaysFromToday = Math.ceil(diff / (1000 * 3600 * 24))
+                    if (diffDaysFromToday < surveyWaitPeriodInDays) {
+                        return
                     }
                 }
             }
-        })
+
+            if (!localStorage.getItem(`seenSurvey_${survey.id}`)) {
+                const shadow = createShadow(style(survey.id, survey?.appearance), survey.id)
+                let surveyPopup
+                if (survey.questions.length < 2) {
+                    surveyPopup = createSingleQuestionSurvey(posthog, survey, survey.questions[0])
+                } else {
+                    surveyPopup = createMultipleQuestionSurvey(posthog, survey)
+                }
+                addCancelListeners(posthog, surveyPopup, survey.id, survey.name)
+                if (survey.appearance?.whiteLabel) {
+                    surveyPopup.getElementsByClassName('footer-branding')[0].style.display = 'none'
+                }
+                shadow.appendChild(surveyPopup)
+                if (survey.questions.length > 1) {
+                    let currentQuestion = 0
+                    showQuestion(currentQuestion, survey.id)
+                }
+                setTextColors(shadow)
+                window.dispatchEvent(new Event('PHSurveyShown'))
+                posthog.capture('survey shown', {
+                    $survey_name: survey.name,
+                    $survey_id: survey.id,
+                    sessionRecordingUrl: posthog.get_session_replay_url?.(),
+                })
+                localStorage.setItem(`lastSeenSurveyDate`, new Date().toISOString())
+                if (survey.appearance?.displayThankYouMessage) {
+                    window.addEventListener('PHSurveySent', () => {
+                        const thankYouElement = createThankYouMessage(survey)
+                        shadow.appendChild(thankYouElement)
+                        const cancelButtons = thankYouElement.querySelectorAll('.form-cancel, .form-submit');
+                        for (const button of cancelButtons) {
+                            button.addEventListener('click', () => {
+                                thankYouElement.remove()
+                            })
+                        }
+                        const countdownEl = thankYouElement.querySelector('.thank-you-message-countdown');
+                        if (countdownEl) {
+                            let count = 3;
+                            countdownEl.textContent = `(${count})`
+                            const countdown = setInterval(() => {
+                                count -= 1;
+                                if (count <= 0) {
+                                    clearInterval(countdown)
+                                    thankYouElement.remove();
+                                    return
+                                }
+                                countdownEl.textContent = `(${count})`
+                            }, 1000)
+                        }
+                        setTextColors(shadow)
+                    })
+                }
+            }
+        }
+    })
     }, forceReload)
 }
-
 
 
 export const closeSurveyPopup = (surveyId: string, surveyPopup: HTMLFormElement) => {
